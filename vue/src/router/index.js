@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { defaultRoute } from '@/config/menu'
-import MainLayout from '@/layouts/MainLayout.vue'
-
+import AppLayout from '@/layouts/AppLayout.vue'
+import { message } from '@/utils/message'
 const routes = [
   {
     path: '/login',
@@ -10,7 +10,7 @@ const routes = [
   },
   {
     path: '/',
-    component: MainLayout,     // 使用主布局
+    component: AppLayout,     // 使用主布局
     children: [
       {
         path: '',
@@ -59,8 +59,9 @@ const router = createRouter({
 
 // 添加路由守卫
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token')
-  if (to.path !== '/login' && !token) {
+  const userId = localStorage.getItem('userId')
+  if (to.path !== '/login' && !userId) {
+    message.error('请先登录')
     next('/login')
   } else {
     next()

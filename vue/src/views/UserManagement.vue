@@ -1,8 +1,9 @@
 <script setup>
 import http from '@/utils/http'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import { message } from '@/utils/message'
+import { generateUserId } from '@/utils/idGenerator'
 
 // 用户列表数据
 const users = ref([])
@@ -23,6 +24,45 @@ const dialogTitle = ref('')
 const isEdit = ref(false)
 // 加载状态
 const loading = ref(false)
+
+// 添加搜索和筛选状态
+const search = ref('')
+const roleFilter = ref('all')
+const statusFilter = ref('all')
+
+// 角色选项
+const roleOptions = [
+  { title: '全部角色', value: 'all' },
+  { title: '管理员', value: 'admin' },
+  { title: '用户', value: 'user' },
+  { title: '回收员', value: 'recycler' }
+]
+
+// 状态选项
+const statusOptions = [
+  { title: '全部状态', value: 'all' },
+  { title: '启用', value: 'active' },
+  { title: '禁用', value: 'inactive' }
+]
+
+// 计算过滤后的用户列表
+const filteredUsers = computed(() => {
+  return users.value.filter(user => {
+    // 搜索条件：用户名、邮箱或电话包含搜索关键词
+    const searchMatch = search.value === '' || 
+      user.username?.toLowerCase().includes(search.value.toLowerCase()) ||
+      user.email?.toLowerCase().includes(search.value.toLowerCase()) ||
+      user.phone?.includes(search.value)
+
+    // 角色筛选
+    const roleMatch = roleFilter.value === 'all' || user.role === roleFilter.value
+
+    // 状态筛选
+    const statusMatch = statusFilter.value === 'all' || user.status === statusFilter.value
+
+    return searchMatch && roleMatch && statusMatch
+  })
+})
 
 // 修改表格的 headers 配置
 const headers = [
@@ -51,6 +91,7 @@ function openAddDialog() {
   isEdit.value = false
   dialogTitle.value = '添加用户'
   editedUser.value = {
+    id: generateUserId(),
     username: '',
     email: '',
     phone: '',
@@ -117,6 +158,68 @@ function getDefaultAvatar(username) {
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random`
 }
 
+// 处理头像上传
+async function handleAvatarUpload(event) {
+  const file = event.target.files[0]
+  if (!file) return
+  
+  // 检查文件类型
+  if (!file.type.startsWith('image/')) {
+    message.error('请上传图片文件')
+    return
+  }
+  
+  // 检查文件大小（限制为2MB）
+  if (file.size > 2 * 1024 * 1024) {
+    message.error('图片大小不能超过2MB')
+    return
+  }
+
+  // 确保有有效的用户ID
+  if (!editedUser.value.id) {
+    message.error('用户ID无效')
+    return
+  }
+
+  // 创建预览URL
+  const previewUrl = URL.createObjectURL(file)
+  // 先更新预览
+  editedUser.value.avatar = previewUrl
+
+  loading.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('relatedId', String(editedUser.value.id))
+    formData.append('relatedType', 'avatar')
+
+    const res = await http.post('/file/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    if (res.data.code === 1) {
+      message.success('头像上传成功')
+      // 不需要立即刷新列表，保持预览URL
+      // getUsers() // 移除这行
+    } else {
+      message.error(res.data.message || '头像上传失败')
+      // 上传失败时恢复原头像
+      editedUser.value.avatar = null
+    }
+  } catch (error) {
+    message.error('头像上传失败，请稍后重试')
+    console.error('上传错误:', error)
+    // 上传失败时恢复原头像
+    editedUser.value.avatar = null
+  } finally {
+    loading.value = false
+    // 清理预览URL，避免内存泄漏
+    URL.revokeObjectURL(previewUrl)
+  }
+}
+
 onMounted(() => {
   getUsers()
 })
@@ -126,7 +229,7 @@ onMounted(() => {
   <v-container>
     <!-- 顶部操作栏 -->
     <v-row class="mb-4">
-      <v-col cols="12">
+      <v-col cols="12" sm="6" md="3">
         <v-btn
           color="primary"
           prepend-icon="mdi-plus"
@@ -135,13 +238,50 @@ onMounted(() => {
           添加用户
         </v-btn>
       </v-col>
+      
+      <!-- 搜索框 -->
+      <v-col cols="12" sm="6" md="3">
+        <v-text-field
+          v-model="search"
+          label="搜索用户"
+          prepend-inner-icon="mdi-magnify"
+          single-line
+          hide-details
+          variant="outlined"
+          density="compact"
+        ></v-text-field>
+      </v-col>
+
+      <!-- 角色筛选 -->
+      <v-col cols="12" sm="6" md="3">
+        <v-select
+          v-model="roleFilter"
+          :items="roleOptions"
+          label="角色筛选"
+          hide-details
+          variant="outlined"
+          density="compact"
+        ></v-select>
+      </v-col>
+
+      <!-- 状态筛选 -->
+      <v-col cols="12" sm="6" md="3">
+        <v-select
+          v-model="statusFilter"
+          :items="statusOptions"
+          label="状态筛选"
+          hide-details
+          variant="outlined"
+          density="compact"
+        ></v-select>
+      </v-col>
     </v-row>
 
     <!-- 用户列表 -->
     <v-card>
       <v-data-table
         :headers="headers"
-        :items="users"
+        :items="filteredUsers"
         :loading="loading"
         hover
       >
@@ -204,7 +344,7 @@ onMounted(() => {
         <v-card-title>{{ dialogTitle }}</v-card-title>
         <v-card-text>
           <v-form @submit.prevent="saveUser">
-            <!-- 添加头像预览和上传 -->
+            <!-- 修改头像预览和上传 -->
             <div class="d-flex justify-center align-center mb-4">
               <v-avatar size="100" class="mb-2">
                 <v-img
@@ -222,12 +362,36 @@ onMounted(() => {
                 </v-img>
               </v-avatar>
             </div>
+            
+            <!-- 添加文件上传按钮 -->
+            <div class="d-flex justify-center mb-4">
+              <v-btn
+                color="primary"
+                prepend-icon="mdi-camera"
+                @click="$refs.fileInput.click()"
+                :loading="loading"
+              >
+                更换头像
+              </v-btn>
+              <input
+                ref="fileInput"
+                type="file"
+                accept="image/*"
+                style="display: none"
+                @change="handleAvatarUpload"
+              >
+            </div>
+
+            <!-- 或者手动输入URL -->
             <v-text-field
               v-model="editedUser.avatar"
-              label="头像URL"
+              label="或直接输入头像URL"
               placeholder="请输入头像图片链接"
               class="mb-4"
+              hint="支持直接输入图片链接或上传本地图片"
+              persistent-hint
             ></v-text-field>
+
             <v-text-field
               v-model="editedUser.username"
               label="用户名"
@@ -304,5 +468,42 @@ onMounted(() => {
 .v-avatar:hover {
   border-color: var(--v-theme-primary);
   transform: scale(1.05);
+}
+
+/* 添加头像上传相关样式 */
+.avatar-upload {
+  position: relative;
+  cursor: pointer;
+}
+
+.avatar-upload:hover .upload-overlay {
+  opacity: 1;
+}
+
+.upload-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 50%;
+}
+
+/* 添加搜索和筛选相关样式 */
+.v-text-field,
+.v-select {
+  margin-top: 0;
+}
+
+@media (max-width: 960px) {
+  .v-btn {
+    margin-bottom: 16px;
+  }
 }
 </style>

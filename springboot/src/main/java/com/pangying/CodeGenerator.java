@@ -9,10 +9,10 @@ public class CodeGenerator {
         // 使用 FastAutoGenerator 快速配置代码生成器
         FastAutoGenerator.create("jdbc:mysql://localhost:3306/py", "root", "123456")
                 .globalConfig(builder -> {
-                    builder.outputDir("src/main/java"); // 输出目录
+                    builder.outputDir("springboot/src/main/java"); // 输出目录
                 })
                 .packageConfig(builder -> {
-                    builder.parent("com.chenxianyu") // 设置父包名
+                    builder.parent("com.pangying") // 设置父包名
                             .entity("entity") // 设置实体类包名
                             .mapper("mapper") // 设置 Mapper 接口包名
                             .service("service") // 设置 Service 接口包名
@@ -20,7 +20,7 @@ public class CodeGenerator {
                             .xml("mappers"); // 设置 Mapper XML 文件包名
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("user") // 设置需要生成的表名
+                    builder.addInclude("recycling_record") // 设置需要生成的表名
                             .entityBuilder()
                             .enableLombok() // 启用 Lombok 注解，包括 @Data
                             .enableTableFieldAnnotation() // 启用 @TableField 注解

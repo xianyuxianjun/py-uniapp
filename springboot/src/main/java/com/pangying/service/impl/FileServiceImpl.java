@@ -66,6 +66,8 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements IF
         LambdaQueryWrapper<File> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(File::getRelatedId, relatedId);
         queryWrapper.eq(File::getRelatedType, relatedType);
+        //查询最新的记录
+        queryWrapper.orderByDesc(File::getCreateAt);
         queryWrapper.last("limit 1");
         File file = getOne(queryWrapper);
         return file == null ? null : BASE_URL + file.getId();

@@ -29,7 +29,7 @@ public class User implements Serializable {
      * 用户ID，主键，无符号整数，自动递增
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 用户名，唯一且不能为空

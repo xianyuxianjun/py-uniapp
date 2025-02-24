@@ -22,6 +22,7 @@ import java.io.IOException;
  * @author baomidou
  * @since 2025-02-23
  */
+@CrossOrigin
 @RestController
 @RequestMapping("/file")
 public class FileController {

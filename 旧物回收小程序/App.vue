@@ -13,5 +13,11 @@
 </script>
 
 <style>
-	/*每个页面公共css */
+	/* 引入图标样式 */
+	@import './static/iconfont.css';
+
+	/* 全局样式 */
+	page {
+		background: #fff;
+	}
 </style>

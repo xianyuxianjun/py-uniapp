@@ -3,24 +3,16 @@
 		<!-- 状态栏占位 -->
 		<view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
 		
-		<!-- 自定义导航栏 -->
+		<!-- 自定义导航栏 - 放入搜索框 -->
 		<view class="nav-bar">
-			<text class="title">首页</text>
+			<view class="search-box">
+				<uni-icons type="search" size="20" color="#666"></uni-icons>
+				<input type="text" placeholder="搜索回收物品" placeholder-class="placeholder" />
+			</view>
 		</view>
 		
 		<!-- 内容区域 -->
 		<scroll-view class="content" scroll-y>
-			<view class="header">
-				<view class="location">
-					<uni-icons type="location" size="20" color="#333"></uni-icons>
-					<text>当前位置</text>
-				</view>
-				<view class="search-box">
-					<uni-icons type="search" size="20" color="#666"></uni-icons>
-					<input type="text" placeholder="搜索回收物品" placeholder-class="placeholder" />
-				</view>
-			</view>
-			
 			<view class="banner">
 				<image src="https://picsum.photos/750/300" mode="aspectFill"></image>
 			</view>
@@ -115,37 +107,10 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0 15px;
-	
-	.title {
-		font-size: 16px;
-		font-weight: 500;
-		color: #333;
-	}
-}
-
-.content {
-	flex: 1;
-	height: 0;
-}
-
-.header {
-	padding: 20rpx 30rpx;
-	background: #fff;
-	
-	.location {
-		display: flex;
-		align-items: center;
-		margin-bottom: 20rpx;
-		
-		text {
-			font-size: 28rpx;
-			color: #333;
-			margin-left: 10rpx;
-		}
-	}
+	padding: 0 30rpx;
 	
 	.search-box {
+		width: 100%;
 		display: flex;
 		align-items: center;
 		height: 72rpx;
@@ -164,6 +129,11 @@
 			color: #999;
 		}
 	}
+}
+
+.content {
+	flex: 1;
+	height: 0;
 }
 
 .banner {

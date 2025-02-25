@@ -1,5 +1,5 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+	"pages": [
 		{
 			"path": "pages/login/login",
 			"style": {
@@ -58,20 +58,20 @@
 			{
 				"pagePath": "pages/index/index",
 				"text": "首页",
-				"iconPath": "@/tabbar/home.png",
-				"selectedIconPath": "@/tabbar/home-active.png"
+				"iconPath": "static/tabbar/home.png",
+				"selectedIconPath": "static/tabbar/home.png"
 			},
 			{
 				"pagePath": "pages/mall/mall",
 				"text": "商城",
-				"iconPath": "@/tabbar/mall.png",
-				"selectedIconPath": "@/tabbar/mall-active.png"
+				"iconPath": "static/tabbar/mall.png",
+				"selectedIconPath": "static/tabbar/mall.png"
 			},
 			{
 				"pagePath": "pages/mine/mine",
 				"text": "我的",
-				"iconPath": "@/tabbar/user.png",
-				"selectedIconPath": "@/tabbar/user-active.png"
+				"iconPath": "static/tabbar/user.png",
+				"selectedIconPath": "static/tabbar/user.png"
 			}
 		]
 	}

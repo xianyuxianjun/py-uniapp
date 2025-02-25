@@ -1,14 +1,11 @@
 <template>
-  <!-- 根据路由meta信息选择布局 -->
-  <component :is="route.meta.layout === 'blank' ? BlankLayout : MainLayout">
-    <router-view></router-view>
-  </component>
+  <RouterView></RouterView>
 </template>
 
 <script setup>
 import { useRoute } from 'vue-router'
-import MainLayout from '@/layouts/MainLayout.vue'
-import BlankLayout from '@/layouts/BlankLayout.vue'
+import AppLayout from '@/components/layout/AppLayout.vue'
+import BlankLayout from '@/components/layout/BlankLayout.vue'
 
 const route = useRoute()
 </script>

@@ -8,6 +8,8 @@ import com.pangying.utils.MD5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/auth")
@@ -39,5 +41,30 @@ public class AuthController {
         }
         user.setPasswordHash(MD5Utils.encode(user.getPasswordHash()));
         return userService.save(user) ? R.success() : R.fail("注册失败");
+    }
+
+    @GetMapping("/getProfile")
+    public R getProfile(@RequestParam Long id) {
+        return R.success(userService.getById(id));
+    }
+
+    @PostMapping("/updateProfile")
+    public R updateProfile(@RequestBody User user) {
+        User existingUser = userService.getById(user.getId());
+        if (existingUser == null) {
+            return R.fail("用户不存在");
+        }
+
+        existingUser.setEmail(user.getEmail());
+        existingUser.setPhone(user.getPhone());
+        existingUser.setAvatar(user.getAvatar());
+        existingUser.setGender(user.getGender());
+        existingUser.setUpdatedAt(LocalDateTime.now());
+
+        if (userService.updateById(existingUser)) {
+            return R.success("更新成功");
+        } else {
+            return R.fail("更新失败");
+        }
     }
 }

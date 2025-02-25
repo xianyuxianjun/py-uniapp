@@ -16,13 +16,7 @@
 
     <!-- 主要内容区域 -->
     <v-main class="bg-background">
-      <v-container fluid class="pa-6">
-        <router-view v-slot="{ Component }">
-          <v-fade-transition>
-            <component :is="Component" />
-          </v-fade-transition>
-        </router-view>
-      </v-container>
+      <RouterView></RouterView>
     </v-main>
   </v-app>
 </template>
@@ -78,4 +72,4 @@ const handleRailUpdate = (value) => {
 .fade-leave-to {
   opacity: 0;
 }
-</style> 
+</style>

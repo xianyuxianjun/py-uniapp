@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { defaultRoute } from '@/config/menu'
-import AppLayout from '@/layouts/AppLayout.vue'
+import AppLayout from '@/components/layout/AppLayout.vue'
 import { message } from '@/utils/message'
 const routes = [
   {
@@ -21,32 +21,36 @@ const routes = [
         component: () => import('@/views/UserManagement.vue')
       },
       {
-        path:'/profile',
+        path:'profile',
         component:()=>import('@/views/Profile.vue')
       },
       {
-        path:'/settings',
+        path:'settings',
         component:()=>import('@/views/Settings.vue')
       },
       {
-        path:'/waste-category',
+        path:'waste-category',
         component:()=>import('@/views/WasteCategoryManagement.vue')
       },
       {
-        path:'/appointment-order',
+        path:'appointment-order',
         component:()=>import('@/views/AppointmentOrderManagement.vue')
       },
       {
-        path:'/announcement',
+        path:'announcement',
         component:()=>import('@/views/AnnouncementManagement.vue')
       },
       {
-        path:'/order-review',
+        path:'order-review',
         component:()=>import('@/views/OrderReviewManagement.vue')
       },
       {
-        path: '/recycling-record',
+        path: 'recycling-record',
         component: () => import('@/views/RecyclingRecordManagement.vue')
+      },
+      {
+        path: 'statistics',
+        component: () => import('@/views/Statistics.vue')
       }
     ]
   }

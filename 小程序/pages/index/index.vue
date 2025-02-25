@@ -3,14 +3,6 @@
 		<!-- 状态栏占位 -->
 		<view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
 		
-		<!-- 自定义导航栏 - 放入搜索框 -->
-		<view class="nav-bar">
-			<view class="search-box">
-				<uni-icons type="search" size="20" color="#666"></uni-icons>
-				<input type="text" placeholder="搜索回收物品" placeholder-class="placeholder" />
-			</view>
-		</view>
-		
 		<!-- 内容区域 -->
 		<scroll-view class="content" scroll-y>
 			<view class="banner">
@@ -18,23 +10,54 @@
 			</view>
 			
 			<view class="category-list">
-				<view class="category-item" v-for="(item, index) in categories" :key="index">
-					<image :src="item.icon" mode="aspectFit"></image>
-					<text>{{item.name}}</text>
+				<view class="category-item" @click="navigateTo('/pages/appointment/index')">
+					<view class="icon-wrapper">
+						<uni-icons type="calendar" size="28" color="#2979ff"></uni-icons>
+					</view>
+					<text>预约回收</text>
+				</view>
+				<view class="category-item" @click="navigateTo('/pages/order/list')">
+					<view class="icon-wrapper">
+						<uni-icons type="list" size="28" color="#ff6b6b"></uni-icons>
+					</view>
+					<text>我的订单</text>
+				</view>
+				<view class="category-item" @click="navigateTo('/pages/message/index')">
+					<view class="icon-wrapper">
+						<uni-icons type="notification" size="28" color="#ffd43b"></uni-icons>
+					</view>
+					<text>消息通知</text>
+				</view>
+				<view class="category-item" @click="navigateTo('/pages/browse/index')">
+					<view class="icon-wrapper">
+						<uni-icons type="shop" size="28" color="#51cf66"></uni-icons>
+					</view>
+					<text>废品浏览</text>
 				</view>
 			</view>
 			
-			<view class="section">
+			<!-- 废品回收列表 -->
+			<view class="section waste-list">
 				<view class="section-header">
-					<text class="title">回收资讯</text>
-					<text class="more">更多</text>
+					<text class="title">回收价目表</text>
 				</view>
-				<view class="news-list">
-					<view class="news-item" v-for="(item, index) in newsList" :key="index">
-						<image :src="item.image" mode="aspectFill"></image>
-						<view class="info">
-							<text class="title">{{item.title}}</text>
-							<text class="desc">{{item.desc}}</text>
+				<view class="waste-items">
+					<view class="waste-item" 
+						v-for="(item, index) in wasteList" 
+						:key="index"
+						hover-class="waste-item-hover"
+						:hover-stay-time="100"
+					>
+						<view class="waste-info">
+							<image class="waste-image" :src="item.imageUrl" mode="aspectFill"></image>
+							<view class="info-content">
+								<text class="waste-name">{{item.categoryName}}</text>
+								<text class="waste-desc">{{item.description}}</text>
+							</view>
+							<view class="waste-price">
+								<text class="price">{{item.price}}</text>
+								<text class="unit">元/{{item.unit}}</text>
+							</view>
 						</view>
 					</view>
 				</view>
@@ -51,22 +74,27 @@
 		data() {
 			return {
 				statusBarHeight: 0,
-				categories: [
-					{ name: '废纸', icon: 'https://picsum.photos/80/80?random=1' },
-					{ name: '塑料', icon: 'https://picsum.photos/80/80?random=2' },
-					{ name: '金属', icon: 'https://picsum.photos/80/80?random=3' },
-					{ name: '电器', icon: 'https://picsum.photos/80/80?random=4' }
-				],
-				newsList: [
+				wasteList: [
 					{
-						title: '垃圾分类从我做起',
-						desc: '让我们一起为环保出一份力',
-						image: 'https://picsum.photos/200/140?random=5'
+						categoryName: '废纸皮',
+						price: '1.5',
+						unit: '公斤',
+						imageUrl: 'https://picsum.photos/100/100?random=1',
+						description: '干净的纸箱、纸皮等'
 					},
 					{
-						title: '如何正确回收塑料制品',
-						desc: '塑料回收小技巧',
-						image: 'https://picsum.photos/200/140?random=6'
+						categoryName: '废铜',
+						price: '35',
+						unit: '公斤',
+						imageUrl: 'https://picsum.photos/100/100?random=2',
+						description: '电线、铜管、紫铜等'
+					},
+					{
+						categoryName: '废铝',
+						price: '12',
+						unit: '公斤',
+						imageUrl: 'https://picsum.photos/100/100?random=3',
+						description: '易拉罐、铝合金等'
 					}
 				]
 			}
@@ -84,7 +112,11 @@
 			}
 		},
 		methods: {
-
+			navigateTo(url) {
+				uni.navigateTo({
+					url: url
+				})
+			}
 		}
 	}
 </script>
@@ -92,43 +124,13 @@
 <style lang="scss">
 .container {
 	min-height: 100vh;
-	background: #f5f5f5;
+	background: linear-gradient(180deg, #f0f5ff 0%, #f5f5f5 30%);
 	display: flex;
 	flex-direction: column;
 }
 
 .status-bar {
-	background: #fff;
-}
-
-.nav-bar {
-	height: 44px;
-	background: #fff;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 0 30rpx;
-	
-	.search-box {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		height: 72rpx;
-		padding: 0 30rpx;
-		background: #f5f5f5;
-		border-radius: 36rpx;
-		
-		input {
-			flex: 1;
-			height: 72rpx;
-			font-size: 28rpx;
-			margin-left: 20rpx;
-		}
-		
-		.placeholder {
-			color: #999;
-		}
-	}
+	background: transparent;
 }
 
 .content {
@@ -137,10 +139,11 @@
 }
 
 .banner {
-	margin: 20rpx 30rpx;
+	margin: 30rpx 30rpx 40rpx;
 	height: 300rpx;
-	border-radius: 20rpx;
+	border-radius: 24rpx;
 	overflow: hidden;
+	box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.05);
 	
 	image {
 		width: 100%;
@@ -151,31 +154,50 @@
 .category-list {
 	display: flex;
 	justify-content: space-between;
-	padding: 30rpx;
-	background: #fff;
-	margin-bottom: 20rpx;
+	padding: 40rpx 30rpx;
+	background: rgba(255, 255, 255, 0.9);
+	margin: 0 30rpx 40rpx;
+	border-radius: 24rpx;
+	box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.05);
+	backdrop-filter: blur(10px);
 	
 	.category-item {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		flex: 1;
 		
-		image {
-			width: 80rpx;
-			height: 80rpx;
+		.icon-wrapper {
+			width: 96rpx;
+			height: 96rpx;
+			background: #f8f9fa;
+			border-radius: 48rpx;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 			margin-bottom: 16rpx;
+			transition: all 0.3s;
+			
+			&:active {
+				transform: scale(0.95);
+			}
 		}
 		
 		text {
-			font-size: 24rpx;
+			font-size: 26rpx;
 			color: #333;
+			font-weight: 500;
 		}
 	}
 }
 
 .section {
-	background: #fff;
+	background: rgba(255, 255, 255, 0.9);
+	margin: 0 30rpx 40rpx;
 	padding: 30rpx;
+	border-radius: 24rpx;
+	box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.05);
+	backdrop-filter: blur(10px);
 	
 	.section-header {
 		display: flex;
@@ -194,36 +216,109 @@
 			color: #999;
 		}
 	}
-	
-	.news-list {
-		.news-item {
-			display: flex;
-			margin-bottom: 30rpx;
+}
+
+.waste-list {
+	.waste-items {
+		.waste-item {
+			background: #fff;
+			border-radius: 12rpx;
+			margin-bottom: 20rpx;
+			overflow: hidden;
+			border: 1px solid #f0f0f0;
+			transition: all 0.2s ease;
 			
-			&:last-child {
-				margin-bottom: 0;
-			}
-			
-			image {
-				width: 200rpx;
-				height: 140rpx;
-				border-radius: 10rpx;
-			}
-			
-			.info {
-				flex: 1;
-				margin-left: 20rpx;
+			.waste-info {
+				padding: 24rpx;
+				display: flex;
+				align-items: center;
+				position: relative;
 				
-				.title {
-					font-size: 28rpx;
-					color: #333;
-					margin-bottom: 10rpx;
+				&::after {
+					content: '';
+					position: absolute;
+					left: 24rpx;
+					right: 24rpx;
+					bottom: 0;
+					height: 1px;
+					background: #f5f5f5;
 				}
 				
-				.desc {
-					font-size: 24rpx;
-					color: #999;
+				.waste-image {
+					width: 120rpx;
+					height: 120rpx;
+					border-radius: 12rpx;
+					object-fit: cover;
+					background: #f5f5f5;
+					box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 				}
+				
+				.info-content {
+					flex: 1;
+					margin: 0 24rpx;
+					
+					.waste-name {
+						font-size: 30rpx;
+						font-weight: 500;
+						color: #333;
+						margin-bottom: 12rpx;
+						display: block;
+					}
+					
+					.waste-desc {
+						font-size: 26rpx;
+						color: #666;
+						display: block;
+						line-height: 1.4;
+					}
+				}
+				
+				.waste-price {
+					display: flex;
+					flex-direction: column;
+					align-items: flex-end;
+					padding-left: 24rpx;
+					position: relative;
+					
+					&::before {
+						content: '';
+						position: absolute;
+						left: 0;
+						top: 10%;
+						bottom: 10%;
+						width: 1px;
+						background: #f0f0f0;
+					}
+					
+					.price {
+						font-size: 36rpx;
+						color: #ff4d4f;
+						font-weight: 500;
+						font-family: 'DIN Alternate', sans-serif;
+					}
+					
+					.unit {
+						font-size: 24rpx;
+						color: #999;
+						margin-top: 4rpx;
+					}
+				}
+			}
+		}
+		
+		.waste-item-hover {
+			background: #f8f9fa;
+			transform: translateX(8rpx);
+			border-color: #e8e8e8;
+			box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+			
+			.waste-image {
+				transform: scale(1.02);
+				transition: transform 0.2s ease;
+			}
+			
+			.price {
+				color: #ff2a2a !important;
 			}
 		}
 	}

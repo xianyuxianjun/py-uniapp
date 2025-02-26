@@ -39,7 +39,13 @@ public class AuthController {
         if (one != null) {
             return R.fail("用户已存在");
         }
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setAvatar("https://img.yzcdn.cn/vant/cat.jpeg");
         user.setPasswordHash(MD5Utils.encode(user.getPasswordHash()));
+        user.setRole("user");
+        user.setGender("保密");
+        user.setStatus("active");
         return userService.save(user) ? R.success() : R.fail("注册失败");
     }
 

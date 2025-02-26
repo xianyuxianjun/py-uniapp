@@ -339,28 +339,60 @@ export default {
 		
 		.action-btns {
 			display: flex;
-			gap: 10px;
+			gap: 12px;
 			
 			.action-btn {
 				margin: 0;
-				padding: 0 15px;
-				height: 32px;
-				line-height: 32px;
+				padding: 0 20px;
+				height: 36px;
+				line-height: 36px;
 				font-size: 14px;
-				border-radius: 16px;
+				border-radius: 18px;
+				position: relative;
+				overflow: hidden;
+				transition: all 0.3s ease;
 				
 				&.complete {
 					color: #fff;
-					background: #4caf50;
+					background: linear-gradient(135deg, #4CAF50, #45a049);
+					box-shadow: 0 2px 6px rgba(76, 175, 80, 0.3);
+					
+					&:active {
+						transform: translateY(1px);
+						box-shadow: 0 1px 3px rgba(76, 175, 80, 0.3);
+					}
 				}
 				
 				&.navigate {
 					color: #fff;
-					background: #2979ff;
+					background: linear-gradient(135deg, #2979ff, #1565C0);
+					box-shadow: 0 2px 6px rgba(41, 121, 255, 0.3);
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					
+					&::before {
+						content: '';
+						width: 16px;
+						height: 16px;
+						margin-right: 4px;
+						background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>') no-repeat center;
+						background-size: contain;
+					}
+					
+					&:active {
+						transform: translateY(1px);
+						box-shadow: 0 1px 3px rgba(41, 121, 255, 0.3);
+					}
 				}
 				
-				&:active {
-					opacity: 0.8;
+				&:disabled {
+					opacity: 0.6;
+					cursor: not-allowed;
+				}
+				
+				&::after {
+					border: none;
 				}
 			}
 		}

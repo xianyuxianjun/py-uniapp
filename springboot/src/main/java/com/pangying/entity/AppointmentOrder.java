@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonFormat;
 /**
  * <p>
  * 上门预约订单表
@@ -41,6 +42,7 @@ public class AppointmentOrder implements Serializable {
     /**
      * 预约时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField("appointment_time")
     private LocalDateTime appointmentTime;
 

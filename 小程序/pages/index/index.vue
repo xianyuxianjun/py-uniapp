@@ -74,29 +74,7 @@
 		data() {
 			return {
 				statusBarHeight: 0,
-				wasteList: [
-					{
-						categoryName: '废纸皮',
-						price: '1.5',
-						unit: '公斤',
-						imageUrl: 'https://picsum.photos/100/100?random=1',
-						description: '干净的纸箱、纸皮等'
-					},
-					{
-						categoryName: '废铜',
-						price: '35',
-						unit: '公斤',
-						imageUrl: 'https://picsum.photos/100/100?random=2',
-						description: '电线、铜管、紫铜等'
-					},
-					{
-						categoryName: '废铝',
-						price: '12',
-						unit: '公斤',
-						imageUrl: 'https://picsum.photos/100/100?random=3',
-						description: '易拉罐、铝合金等'
-					}
-				]
+				wasteList: []
 			}
 		},
 		onLoad() {
@@ -110,11 +88,52 @@
 					url: '/pages/login/login'
 				})
 			}
+			
+			// 调用获取废品分类列表的方法
+			this.getWasteCategories()
 		},
 		methods: {
 			navigateTo(url) {
 				uni.navigateTo({
 					url: url
+				})
+			},
+			// 获取废品分类列表
+			getWasteCategories() {
+				// 显示加载提示
+				uni.showLoading({
+					title: '加载中...'
+				})
+				
+				// 调用后端接口
+				uni.request({
+					url: 'http://localhost:8080/wasteCategory/list', // 请根据实际后端地址修改
+					method: 'GET',
+					success: (res) => {
+						if (res.data.code === 1) { 
+							// 处理价格显示，保留两位小数
+							const list = res.data.data.map(item => ({
+								...item,
+								price: Number(item.price).toFixed(2)
+							}))
+							this.wasteList = list
+						} else {
+							uni.showToast({
+								title: '获取数据失败',
+								icon: 'none'
+							})
+						}
+					},
+					fail: (err) => {
+						console.error('获取废品分类列表失败：', err)
+						uni.showToast({
+							title: '网络请求失败',
+							icon: 'none'
+						})
+					},
+					complete: () => {
+						uni.hideLoading()
+					}
 				})
 			}
 		}

@@ -84,11 +84,31 @@ export default {
 			orders: [],
 			refreshing: false,
 			acceptingId: null, // 正在接单的订单ID
-			currentLocation: null // 当前位置
+			currentLocation: null, // 当前位置
+			userInfo: null
 		}
 	},
 	
 	onLoad() {
+		const userInfo = uni.getStorageSync('userInfo')
+		
+		// 判断是否登录且是回收员
+		if (!userInfo || userInfo.role !== 'recycler') {
+			uni.showModal({
+				title: '提示',
+				content: '请先登录回收员账号',
+				showCancel: false,
+				success: () => {
+					// 跳转到登录页
+					uni.redirectTo({
+						url: '/pages/login/login'
+					})
+				}
+			})
+			return
+		}
+		
+		this.userInfo = userInfo
 		this.statusBarHeight = uni.getSystemInfoSync().statusBarHeight
 		this.getCurrentLocation()
 		this.loadOrders()

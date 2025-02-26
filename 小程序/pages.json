@@ -42,6 +42,14 @@
 				"navigationBarTitleText": "预约回收",
 				"enablePullDownRefresh": false
 			}
+		},
+		{
+			"path": "pages/my-orders/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "我的订单",
+				"enablePullDownRefresh": false
+			}
 		}
 	],
 	"globalStyle": {

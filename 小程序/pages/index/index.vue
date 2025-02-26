@@ -16,9 +16,9 @@
 					</view>
 					<text>预约回收</text>
 				</view>
-				<view class="category-item" @click="navigateTo('/pages/order/list')">
+				<view class="category-item" @click="navigateTo('/pages/my-orders/index')">
 					<view class="icon-wrapper">
-						<uni-icons type="list" size="28" color="#ff6b6b"></uni-icons>
+						<uni-icons type="list" size="28" color="#2979ff"></uni-icons>
 					</view>
 					<text>我的订单</text>
 				</view>

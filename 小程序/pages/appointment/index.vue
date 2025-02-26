@@ -288,6 +288,7 @@ export default {
 			this.submitting = true
 			
 			try {
+				let response;
 				// 构建请求数据
 				const appointmentData = {
 					userId: uni.getStorageSync('userInfo').id,
@@ -297,15 +298,16 @@ export default {
 					mapAddress: this.form.mapAddress || this.form.address,
 					longitude: this.form.longitude ? Number(this.form.longitude) : null,
 					latitude: this.form.latitude ? Number(this.form.latitude) : null,
+					// 修改时间格式，去掉毫秒
 					appointmentTime: `${this.form.appointmentTime}T09:00:00`,
 					notes: this.form.notes || '',
-					status: 1 // 待确认状态
+					status: 1
 				}
 				
 				console.log('提交的数据：', appointmentData)
 				
 				// #ifdef H5
-				const res = await uni.request({
+				response = await uni.request({
 					url: 'http://localhost:8080/appointmentOrder',
 					method: 'POST',
 					header: {
@@ -327,10 +329,11 @@ export default {
 				if (error) {
 					throw new Error('网络请求失败')
 				}
+				response = res
 				// #endif
 				
 				// 统一处理响应
-				if (res.statusCode === 200 && res.data.code === 1) {
+				if (response.statusCode === 200 && response.data.code === 1) {
 					uni.showToast({
 						title: '预约成功',
 						icon: 'success'
@@ -339,7 +342,7 @@ export default {
 						uni.navigateBack()
 					}, 1500)
 				} else {
-					throw new Error(res.data.msg || '预约失败')
+					throw new Error(response.data.msg || '预约失败')
 				}
 			} catch (err) {
 				console.error('提交预约失败：', err)

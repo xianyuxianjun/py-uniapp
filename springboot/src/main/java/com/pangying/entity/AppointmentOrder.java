@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 /**
  * <p>
  * 上门预约订单表
@@ -42,7 +43,8 @@ public class AppointmentOrder implements Serializable {
     /**
      * 预约时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @TableField("appointment_time")
     private LocalDateTime appointmentTime;
 
@@ -79,12 +81,14 @@ public class AppointmentOrder implements Serializable {
     /**
      * 订单创建时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField("created_at")
     private LocalDateTime createdAt;
 
     /**
      * 订单更新时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField("updated_at")
     private LocalDateTime updatedAt;
 

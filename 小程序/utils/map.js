@@ -2,7 +2,10 @@ import AMapLoader from '@amap/amap-jsapi-loader'
 
 // 高德地图配置
 const MAP_CONFIG = {
-  key: '0210f911ba182d239efe8b932b30251a',
+  // Web端 key
+  webKey: '0210f911ba182d239efe8b932b30251a',
+  // 小程序 key
+  mpKey: '你的小程序key', // 需要替换成你的小程序 key
   version: '2.0',
   plugins: ['AMap.Geocoder', 'AMap.Geolocation']
 }
@@ -59,56 +62,20 @@ export const getMapInstance = () => mapInstance
 // 获取当前位置
 export const getCurrentLocation = () => {
   return new Promise((resolve, reject) => {
-    // #ifdef H5
-    if (!geolocation) {
-      reject(new Error('定位服务未初始化'))
-      return
-    }
-    
-    geolocation.getCurrentPosition((status, result) => {
-      if (status === 'complete') {
-        const { position, addressComponent = {}, formattedAddress = '' } = result
-        resolve({
-          latitude: position.lat,
-          longitude: position.lng,
-          address: formattedAddress,
-          // 添加默认值处理，避免 undefined 错误
-          name: addressComponent.street || addressComponent.district || '未知地点'
-        })
-      } else {
-        reject(new Error(result.message))
-      }
-    })
-    // #endif
-    
-    // #ifdef MP-WEIXIN
     uni.getLocation({
       type: 'gcj02',
-      isHighAccuracy: true, // 开启高精度定位
-      success: async (res) => {
-        try {
-          const addressInfo = await getAddressFromLocation(res.latitude, res.longitude)
-          resolve({
-            latitude: res.latitude,
-            longitude: res.longitude,
-            address: addressInfo.address,
-            name: addressInfo.name
-          })
-        } catch (error) {
-          // 如果获取地址失败，至少返回经纬度信息
-          resolve({
-            latitude: res.latitude,
-            longitude: res.longitude,
-            address: '位置获取失败',
-            name: '未知地点'
-          })
-        }
+      isHighAccuracy: true,
+      success: (res) => {
+        resolve({
+          latitude: res.latitude,
+          longitude: res.longitude
+        })
       },
       fail: (err) => {
-        reject(err)
+        console.error('获取位置失败：', err)
+        reject(new Error('获取位置失败'))
       }
     })
-    // #endif
   })
 }
 
@@ -155,4 +122,177 @@ export const getAddressFromLocation = (latitude, longitude) => {
     })
     // #endif
   })
+}
+
+// 打开导航
+export const openNavigation = (latitude, longitude, name, address) => {
+  return new Promise((resolve, reject) => {
+    uni.openLocation({
+      latitude: Number(latitude),
+      longitude: Number(longitude),
+      name: name,
+      address: address,
+      success: resolve,
+      fail: reject
+    })
+  })
+}
+
+// 获取路线规划信息
+export const getRouteInfo = (fromLng, fromLat, toLng, toLat) => {
+    return new Promise((resolve, reject) => {
+        // #ifdef MP-WEIXIN
+        wx.request({
+            url: `https://restapi.amap.com/v3/direction/walking`,
+            data: {
+                key: MAP_CONFIG.mpKey,
+                origin: `${fromLng},${fromLat}`,
+                destination: `${toLng},${toLat}`,
+                extensions: 'base'
+            },
+            success: (res) => {
+                if (res.data.status === '1' && res.data.route) {
+                    try {
+                        const path = res.data.route.paths[0]
+                        const points = []
+                        
+                        // 解析所有步骤的路线点
+                        path.steps.forEach(step => {
+                            if (step.polyline) {
+                                const coordinates = step.polyline.split(';')
+                                coordinates.forEach(coord => {
+                                    const [lng, lat] = coord.split(',').map(Number)
+                                    if (!isNaN(lng) && !isNaN(lat)) {
+                                        points.push({
+                                            longitude: lng,
+                                            latitude: lat
+                                        })
+                                    }
+                                })
+                            }
+                        })
+
+                        // 确保至少有起点和终点
+                        if (points.length === 0) {
+                            points.push(
+                                { longitude: Number(fromLng), latitude: Number(fromLat) },
+                                { longitude: Number(toLng), latitude: Number(toLat) }
+                            )
+                        }
+
+                        resolve({
+                            points: points,
+                            distance: path.distance > 1000 
+                                ? `${(path.distance/1000).toFixed(1)}公里` 
+                                : `${path.distance}米`,
+                            duration: path.duration > 60 
+                                ? `${Math.floor(path.duration/60)}分钟` 
+                                : `${path.duration}秒`
+                        })
+                    } catch (error) {
+                        console.error('路线数据解析失败：', error)
+                        // 降级处理：只返回起点和终点
+                        resolve({
+                            points: [
+                                { longitude: Number(fromLng), latitude: Number(fromLat) },
+                                { longitude: Number(toLng), latitude: Number(toLat) }
+                            ],
+                            distance: '计算中',
+                            duration: '计算中'
+                        })
+                    }
+                } else {
+                    console.error('路线规划API返回错误：', res.data)
+                    // 降级处理
+                    resolve({
+                        points: [
+                            { longitude: Number(fromLng), latitude: Number(fromLat) },
+                            { longitude: Number(toLng), latitude: Number(toLat) }
+                        ],
+                        distance: '计算中',
+                        duration: '计算中'
+                    })
+                }
+            },
+            fail: reject
+        })
+        // #endif
+
+        // #ifdef H5
+        uni.request({
+            url: `https://restapi.amap.com/v3/direction/walking`,
+            data: {
+                key: MAP_CONFIG.webKey,
+                origin: `${fromLng},${fromLat}`,
+                destination: `${toLng},${toLat}`,
+                extensions: 'base'
+            },
+            success: (res) => {
+                if (res.data.status === '1' && res.data.route) {
+                    try {
+                        const path = res.data.route.paths[0]
+                        const points = []
+                        
+                        // 解析所有步骤的路线点
+                        path.steps.forEach(step => {
+                            if (step.polyline) {
+                                const coordinates = step.polyline.split(';')
+                                coordinates.forEach(coord => {
+                                    const [lng, lat] = coord.split(',').map(Number)
+                                    if (!isNaN(lng) && !isNaN(lat)) {
+                                        points.push({
+                                            longitude: lng,
+                                            latitude: lat
+                                        })
+                                    }
+                                })
+                            }
+                        })
+
+                        // 确保至少有起点和终点
+                        if (points.length === 0) {
+                            points.push(
+                                { longitude: Number(fromLng), latitude: Number(fromLat) },
+                                { longitude: Number(toLng), latitude: Number(toLat) }
+                            )
+                        }
+
+                        resolve({
+                            points: points,
+                            distance: path.distance > 1000 
+                                ? `${(path.distance/1000).toFixed(1)}公里` 
+                                : `${path.distance}米`,
+                            duration: path.duration > 60 
+                                ? `${Math.floor(path.duration/60)}分钟` 
+                                : `${path.duration}秒`
+                        })
+                    } catch (error) {
+                        console.error('路线数据解析失败：', error)
+                        // 降级处理：只返回起点和终点
+                        resolve({
+                            points: [
+                                { longitude: Number(fromLng), latitude: Number(fromLat) },
+                                { longitude: Number(toLng), latitude: Number(toLat) }
+                            ],
+                            distance: '计算中',
+                            duration: '计算中'
+                        })
+                    }
+                } else {
+                    console.error('路线规划API返回错误：', res.data)
+                    // 降级处理
+                    resolve({
+                        points: [
+                            { longitude: Number(fromLng), latitude: Number(fromLat) },
+                            { longitude: Number(toLng), latitude: Number(toLat) }
+                        ],
+                        distance: '计算中',
+                        duration: '计算中'
+                    })
+                }
+            },
+            fail: reject
+        })
+        // #endif
+    })
 } 

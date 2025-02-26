@@ -81,11 +81,38 @@
 		<uni-popup ref="popup" type="center">
 			<complete-order-form :orderId="currentOrderId" @success="onFormSuccess" @cancel="onFormCancel" />
 		</uni-popup>
+		
+		<view class="navigation-container" v-if="showNavigation">
+			<map
+				class="navigation-map"
+				:latitude="currentLocation.latitude"
+				:longitude="currentLocation.longitude"
+				:markers="mapMarkers"
+				:polyline="routeLine"
+				:scale="16"
+				show-location
+			></map>
+			
+			<view class="navigation-info">
+				<view class="info-header">
+					<text class="distance">{{navigationInfo.distance}}</text>
+					<text class="duration">预计{{navigationInfo.duration}}</text>
+				</view>
+				<view class="destination">
+					<text>目的地：{{navigationInfo.address}}</text>
+				</view>
+				<view class="nav-actions">
+					<button class="nav-btn" @tap="closeNavigation">关闭导航</button>
+					<button class="nav-btn primary" @tap="startNavigation">开始导航</button>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 
 <script>
 import CompleteOrderForm from '@/components/complete-order-form/complete-order-form.vue'
+import { initAMap, getCurrentLocation, openNavigation, getRouteInfo } from '@/utils/map.js'
 
 export default {
 	components: {
@@ -98,7 +125,19 @@ export default {
 			orders: [],
 			refreshing: false,
 			userInfo: null,
-			currentOrderId: null
+			currentOrderId: null,
+			showNavigation: false,
+			currentLocation: {
+				latitude: 0,
+				longitude: 0
+			},
+			mapMarkers: [],
+			routeLine: [],
+			navigationInfo: {
+				distance: '',
+				duration: '',
+				address: ''
+			}
 		}
 	},
 	
@@ -193,7 +232,7 @@ export default {
 		},
 		
 		// 导航到订单地址
-		handleNavigate(order) {
+		async handleNavigate(order) {
 			if (!order.latitude || !order.longitude) {
 				uni.showToast({
 					title: '无法获取地址坐标',
@@ -202,17 +241,38 @@ export default {
 				return
 			}
 			
-			uni.openLocation({
-				latitude: Number(order.latitude),
-				longitude: Number(order.longitude),
-				name: order.contactName,
-				address: order.address,
-				fail: () => {
-					uni.showToast({
-						title: '导航失败',
-						icon: 'none'
-					})
-				}
+			try {
+				await openNavigation(
+					order.latitude,
+					order.longitude,
+					order.contactName,
+					order.address
+				)
+			} catch (error) {
+				uni.showToast({
+					title: '导航失败',
+					icon: 'none'
+				})
+			}
+		},
+		
+		// 关闭导航
+		closeNavigation() {
+			this.showNavigation = false
+		},
+		
+		// 开始导航
+		startNavigation() {
+			openNavigation(
+				this.mapMarkers[1].latitude,
+				this.mapMarkers[1].longitude,
+				this.navigationInfo.address,
+				this.navigationInfo.address
+			).catch(() => {
+				uni.showToast({
+					title: '导航失败',
+					icon: 'none'
+				})
 			})
 		}
 	}
@@ -419,6 +479,71 @@ export default {
 			font-size: 14px;
 			color: #999;
 			margin-top: 5px;
+		}
+	}
+}
+
+.navigation-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: #fff;
+	z-index: 1000;
+	
+	.navigation-map {
+		width: 100%;
+		height: calc(100% - 160px);
+	}
+	
+	.navigation-info {
+		height: 160px;
+		padding: 20px;
+		background: #fff;
+		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+		
+		.info-header {
+			display: flex;
+			align-items: center;
+			margin-bottom: 12px;
+			
+			.distance {
+				font-size: 24px;
+				font-weight: 600;
+				color: #333;
+				margin-right: 12px;
+			}
+			
+			.duration {
+				font-size: 14px;
+				color: #666;
+			}
+		}
+		
+		.destination {
+			font-size: 14px;
+			color: #666;
+			margin-bottom: 20px;
+		}
+		
+		.nav-actions {
+			display: flex;
+			gap: 12px;
+			
+			.nav-btn {
+				flex: 1;
+				height: 40px;
+				line-height: 40px;
+				border-radius: 20px;
+				font-size: 16px;
+				
+				&.primary {
+					background: linear-gradient(135deg, #2979ff, #1565C0);
+					color: #fff;
+					box-shadow: 0 2px 6px rgba(41, 121, 255, 0.3);
+				}
+			}
 		}
 	}
 }

@@ -1,0 +1,9 @@
+{
+  "mp-weixin": {
+    "permission": {
+      "scope.userLocation": {
+        "desc": "您的位置信息将用于导航功能"
+      }
+    }
+  }
+} 

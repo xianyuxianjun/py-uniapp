@@ -8,6 +8,14 @@
 			}
 		},
 		{
+			"path": "pages/square/index",
+			"style": {
+				"navigationBarTitleText": "订单广场",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
 			"path": "pages/login/login",
 			"style": {
 				"navigationBarTitleText": "登录",
@@ -90,6 +98,14 @@
 				"navigationBarTitleText": "订单列表",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/orders/index",
+			"style": {
+				"navigationBarTitleText": "我的单子",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
+			}
 		}
 	],
 	"globalStyle": {
@@ -102,7 +118,8 @@
 	"easycom": {
 		"autoscan": true,
 		"custom": {
-			"^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+			"^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue",
+			"^complete-(.*)": "@/components/complete-$1/index.vue"
 		}
 	},
 	"tabBar": {
@@ -116,6 +133,18 @@
 				"text": "首页",
 				"iconPath": "static/tabbar/home.png",
 				"selectedIconPath": "static/tabbar/home.png"
+			},
+			{
+				"pagePath": "pages/square/index",
+				"text": "广场",
+				"iconPath": "static/tabbar/square.png",
+				"selectedIconPath": "static/tabbar/square.png"
+			},
+			{
+				"pagePath": "pages/orders/index",
+				"text": "我的单子",
+				"iconPath": "static/tabbar/orders.png",
+				"selectedIconPath": "static/tabbar/orders.png"
 			},
 			{
 				"pagePath": "pages/mall/mall",

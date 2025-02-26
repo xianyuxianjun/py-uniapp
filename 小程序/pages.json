@@ -50,6 +50,14 @@
 				"navigationBarTitleText": "我的订单",
 				"enablePullDownRefresh": false
 			}
+		},
+		{
+			"path": "pages/browse/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "废品浏览",
+				"enablePullDownRefresh": false
+			}
 		}
 	],
 	"globalStyle": {

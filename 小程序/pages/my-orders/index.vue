@@ -227,51 +227,68 @@ export default {
 	background: #fff;
 	border-radius: 16rpx;
 	margin-bottom: 20rpx;
-	padding: 24rpx;
+	overflow: hidden;
 	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
 	
 	.order-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 20rpx;
-		padding-bottom: 20rpx;
+		padding: 24rpx;
+		background: linear-gradient(to right, rgba(41, 121, 255, 0.05), transparent);
 		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 		
 		.order-time {
 			font-size: 26rpx;
 			color: #666;
+			display: flex;
+			align-items: center;
+			
+			&::before {
+				content: '';
+				width: 6rpx;
+				height: 6rpx;
+				background: #2979ff;
+				border-radius: 50%;
+				margin-right: 8rpx;
+			}
 		}
 		
 		.order-status {
 			font-size: 26rpx;
 			font-weight: 600;
-			padding: 4rpx 16rpx;
+			padding: 6rpx 16rpx;
 			border-radius: 8rpx;
 			
 			&.pending {
 				color: #ff9800;
 				background: rgba(255, 152, 0, 0.1);
+				border: 1px solid rgba(255, 152, 0, 0.2);
 			}
 			
 			&.processing {
 				color: #2979ff;
 				background: rgba(41, 121, 255, 0.1);
+				border: 1px solid rgba(41, 121, 255, 0.2);
 			}
 			
 			&.completed {
 				color: #4caf50;
 				background: rgba(76, 175, 80, 0.1);
+				border: 1px solid rgba(76, 175, 80, 0.2);
 			}
 			
 			&.cancelled {
 				color: #999;
 				background: rgba(0, 0, 0, 0.05);
+				border: 1px solid rgba(0, 0, 0, 0.08);
 			}
 		}
 	}
 	
 	.order-content {
+		padding: 24rpx;
+		
 		.info-item {
 			display: flex;
 			margin-bottom: 16rpx;
@@ -289,22 +306,38 @@ export default {
 				font-size: 26rpx;
 				color: #999;
 				flex-shrink: 0;
+				position: relative;
+				padding-left: 20rpx;
+				
+				&::before {
+					content: '';
+					position: absolute;
+					left: 0;
+					top: 50%;
+					transform: translateY(-50%);
+					width: 8rpx;
+					height: 8rpx;
+					background: #e8e8e8;
+					border-radius: 50%;
+				}
 			}
 			
 			.value {
 				flex: 1;
 				font-size: 26rpx;
 				color: #333;
+				line-height: 1.6;
 			}
 		}
 	}
 	
 	.order-footer {
-		margin-top: 24rpx;
-		padding-top: 24rpx;
+		margin: 0 24rpx;
+		padding: 24rpx 0;
 		border-top: 1px solid rgba(0, 0, 0, 0.05);
 		display: flex;
 		justify-content: flex-end;
+		gap: 20rpx;
 		
 		.cancel-btn {
 			font-size: 26rpx;
@@ -313,11 +346,36 @@ export default {
 			padding: 12rpx 32rpx;
 			border-radius: 8rpx;
 			margin: 0;
+			border: 1px solid rgba(0, 0, 0, 0.05);
+			transition: all 0.3s;
 			
 			&:active {
-				opacity: 0.8;
+				transform: scale(0.98);
+				background: #f0f0f0;
 			}
 		}
+		
+		.contact-btn {
+			font-size: 26rpx;
+			color: #2979ff;
+			background: rgba(41, 121, 255, 0.1);
+			padding: 12rpx 32rpx;
+			border-radius: 8rpx;
+			margin: 0;
+			border: 1px solid rgba(41, 121, 255, 0.2);
+			transition: all 0.3s;
+			
+			&:active {
+				transform: scale(0.98);
+				background: rgba(41, 121, 255, 0.15);
+			}
+		}
+	}
+	
+	// 添加卡片悬停效果
+	&:active {
+		transform: translateY(2rpx);
+		box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 	}
 }
 
@@ -331,11 +389,27 @@ export default {
 		width: 240rpx;
 		height: 240rpx;
 		margin-bottom: 30rpx;
+		opacity: 0.8;
 	}
 	
 	text {
 		font-size: 28rpx;
 		color: #999;
+		letter-spacing: 1px;
+	}
+}
+
+// 添加下拉刷新样式
+.order-list {
+	.uni-scroll-view-refresh {
+		.uni-scroll-view-refresh__spinner {
+			color: #2979ff;
+		}
+		
+		.uni-scroll-view-refresh__text {
+			color: #666;
+			font-size: 28rpx;
+		}
 	}
 }
 </style> 

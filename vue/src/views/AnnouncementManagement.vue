@@ -78,7 +78,7 @@ function openAddDialog() {
     title: '',
     content: '',
     status: 1,
-    publishDate: new Date().toISOString().slice(0, 16)
+    publishDate: new Date().toISOString().slice(0, 19)
   }
   dialog.value = true
 }
@@ -89,7 +89,7 @@ function openEditDialog(announcement) {
   dialogTitle.value = '编辑公告'
   editedAnnouncement.value = { 
     ...announcement,
-    publishDate: new Date(announcement.publishDate).toISOString().slice(0, 16)
+    publishDate: announcement.publishDate ? new Date(announcement.publishDate).toISOString().slice(0, 19) : new Date().toISOString().slice(0, 19)
   }
   dialog.value = true
 }
@@ -330,6 +330,7 @@ onMounted(() => {
               v-model="editedAnnouncement.publishDate"
               label="发布时间"
               type="datetime-local"
+              step="1"
               required
             ></v-text-field>
           </v-form>

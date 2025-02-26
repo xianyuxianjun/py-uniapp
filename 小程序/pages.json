@@ -58,6 +58,14 @@
 				"navigationBarTitleText": "废品浏览",
 				"enablePullDownRefresh": false
 			}
+		},
+		{
+			"path": "pages/message/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "消息通知",
+				"enablePullDownRefresh": false
+			}
 		}
 	],
 	"globalStyle": {

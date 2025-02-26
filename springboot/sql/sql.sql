@@ -92,4 +92,43 @@ CREATE INDEX idx_record_customer ON recycling_record(customer_id);
 CREATE INDEX idx_record_category ON recycling_record(category_id);
 CREATE INDEX idx_record_pickup_time ON recycling_record(pickup_time);
 
+CREATE TABLE product (
+                              id bigint AUTO_INCREMENT PRIMARY KEY COMMENT '商品唯一标识',
+                              product_name VARCHAR(100) NOT NULL COMMENT '商品名称',
+                              description TEXT COMMENT '商品描述',
+                              price DECIMAL(10, 2) NOT NULL COMMENT '商品销售价格',
+                              stock_quantity INT NOT NULL COMMENT '商品库存数量',
+                                image_url VARCHAR(255) COMMENT '商品图片URL',
+                             status TINYINT NOT NULL DEFAULT 1 COMMENT '商品状态（1：在售，2：下架）',
+                              created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '商品创建时间',
+                              updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '商品更新时间'
+) COMMENT='商品信息表';
+
+CREATE TABLE `product_order` (
+                                 `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                                 `order_no` varchar(64) NOT NULL COMMENT '订单编号',
+                                 `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+                                 `product_id` bigint(20) NOT NULL COMMENT '商品ID',
+                                 `product_name` varchar(128) NOT NULL COMMENT '商品名称',
+                                 `product_image` varchar(255) DEFAULT NULL COMMENT '商品图片',
+                                 `price` decimal(10,2) NOT NULL COMMENT '商品单价',
+                                 `quantity` int(11) NOT NULL DEFAULT '1' COMMENT '购买数量',
+                                 `total_amount` decimal(10,2) NOT NULL COMMENT '订单总金额',
+                                 `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '订单状态：1-待支付，2-已支付，3-已发货，4-已完成，5-已取消',
+                                 `address` varchar(255) DEFAULT NULL COMMENT '收货地址',
+                                 `contact_name` varchar(64) DEFAULT NULL COMMENT '联系人姓名',
+                                 `contact_phone` varchar(20) DEFAULT NULL COMMENT '联系人电话',
+                                 `notes` varchar(255) DEFAULT NULL COMMENT '订单备注',
+                                 `payment_time` datetime DEFAULT NULL COMMENT '支付时间',
+                                 `delivery_time` datetime DEFAULT NULL COMMENT '发货时间',
+                                 `completion_time` datetime DEFAULT NULL COMMENT '完成时间',
+                                 `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                 `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                 PRIMARY KEY (`id`),
+                                 UNIQUE KEY `uk_order_no` (`order_no`),
+                                 KEY `idx_user_id` (`user_id`),
+                                 KEY `idx_product_id` (`product_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品订单表';
+
+
 

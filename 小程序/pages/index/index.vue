@@ -6,7 +6,7 @@
 		<!-- 内容区域 -->
 		<scroll-view class="content" scroll-y>
 			<view class="banner">
-				<image src="https://picsum.photos/750/300" mode="aspectFill"></image>
+				<image src="/static/1.jpg" mode="aspectFill"></image>
 			</view>
 			
 			<view class="category-list">

@@ -8,7 +8,7 @@
 					<text class="email">{{userInfo.email || '点击登录账号'}}</text>
 				</view>
 			</view>
-			<view class="setting-btn">
+			<view class="setting-btn" @tap="handleMenu(menuList[0])">
 				<uni-icons type="gear" size="24" color="#fff"></uni-icons>
 			</view>
 		</view>
@@ -41,17 +41,12 @@ export default {
 				{
 					icon: 'calendar',
 					title: '回收记录',
-					path: '/pages/records/records'
+					path: '/pages/my-orders/index'
 				},
 				{
-					icon: 'medal',
-					title: '我的积分',
-					path: '/pages/points/points'
-				},
-				{
-					icon: 'help',
-					title: '帮助中心',
-					path: '/pages/help/help'
+					icon: 'cart',
+					title: '我的订单',
+					path: '/pages/order-list/index'
 				}
 			]
 		}
@@ -62,6 +57,7 @@ export default {
 	methods: {
 		getUserInfo() {
 			const userInfo = uni.getStorageSync('userInfo')
+			console.log(userInfo)
 			if (userInfo) {
 				this.userInfo = userInfo
 			}
@@ -73,6 +69,15 @@ export default {
 				})
 				return
 			}
+			
+			// 如果是我的订单，需要传递用户ID
+			if (item.title === '我的订单') {
+				uni.navigateTo({
+					url: `${item.path}?userId=${this.userInfo.id}`
+				})
+				return
+			}
+			
 			uni.navigateTo({
 				url: item.path
 			})
@@ -83,10 +88,24 @@ export default {
 				content: '确定要退出登录吗？',
 				success: (res) => {
 					if (res.confirm) {
+						// 清除用户信息和token
 						uni.removeStorageSync('userInfo')
+						uni.removeStorageSync('token')
 						this.userInfo = {}
+						
 						uni.showToast({
-							title: '已退出登录'
+							title: '已退出登录',
+							icon: 'success',
+							duration: 1500,
+							success: () => {
+								// 延迟跳转，让用户看到提示
+								setTimeout(() => {
+									// 跳转到登录页面
+									uni.reLaunch({
+										url: '/pages/login/login'
+									})
+								}, 1500)
+							}
 						})
 					}
 				}

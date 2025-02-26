@@ -33,6 +33,11 @@ export const menuItems = [
     icon: 'tabler:clipboard-list'
   },
   {
+    value: 'product',
+    title: '商品管理',
+    icon: 'tabler:shopping-cart'
+  },
+  {
     value: 'statistics',
     title: '数据分析',
     icon: 'tabler:chart-bar'

@@ -51,6 +51,10 @@ const routes = [
       {
         path: 'statistics',
         component: () => import('@/views/Statistics.vue')
+      },
+      {
+        path: 'product',
+        component: () => import('@/views/ProductManagement.vue')
       }
     ]
   }

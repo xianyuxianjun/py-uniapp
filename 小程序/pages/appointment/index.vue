@@ -120,10 +120,6 @@
 </template>
 
 <script>
-// #ifdef H5
-import { initAMap, getCurrentLocation, getAddressFromLocation } from '@/utils/map.js'
-// #endif
-
 export default {
 	data() {
 		return {
@@ -173,15 +169,19 @@ export default {
 			this.locationLoading = true
 			
 			try {
-				// #ifdef H5
-				await initAMap()
-				// #endif
+				const res = await new Promise((resolve, reject) => {
+					uni.getLocation({
+						type: 'gcj02',
+						isHighAccuracy: true,
+						success: resolve,
+						fail: reject
+					})
+				})
 				
-				const location = await getCurrentLocation()
-				this.form.address = location.address
-				this.form.mapAddress = location.name
-				this.form.longitude = location.longitude
-				this.form.latitude = location.latitude
+				// 只获取当前位置，不自动打开地图选择
+				this.form.longitude = res.longitude
+				this.form.latitude = res.latitude
+				
 			} catch (error) {
 				console.error('获取位置失败：', error)
 				uni.showToast({
@@ -195,9 +195,7 @@ export default {
 		
 		// 选择地址
 		async chooseLocation() {
-			// #ifdef H5
 			try {
-				await initAMap()
 				const location = await new Promise((resolve, reject) => {
 					uni.chooseLocation({
 						success: resolve,
@@ -212,20 +210,6 @@ export default {
 					icon: 'none'
 				})
 			}
-			// #endif
-			
-			// #ifdef MP-WEIXIN
-			uni.chooseLocation({
-				success: (res) => this.updateLocationInfo(res),
-				fail: (err) => {
-					console.error('选择地址失败：', err)
-					uni.showToast({
-						title: '选择地址失败',
-						icon: 'none'
-					})
-				}
-			})
-			// #endif
 		},
 		
 		// 更新位置信息

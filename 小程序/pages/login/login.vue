@@ -12,7 +12,7 @@
 			
 			<!-- 头像图标 -->
 			<view class="avatar-box">
-				<uni-icons type="contact-filled" size="65" color="#fff"></uni-icons>
+				<image src="/static/logo.svg" mode="aspectFill" class="avatar-image"></image>
 			</view>
 		</view>
 		
@@ -140,143 +140,148 @@ export default {
 <style lang="scss">
 .container {
 	min-height: 100vh;
-	background-color: #ffffff;
+	display: flex;
+	flex-direction: column;
+	background: #fff;
 }
 
 .header {
 	position: relative;
-	height: 45vh;
-	overflow: hidden;
-}
-
-.animated-background {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
+	height: 400rpx;
 	overflow: hidden;
 	
-	.gradient-layer {
-		position: absolute;
-		top: -50%;
-		left: -50%;
-		right: -50%;
-		bottom: -50%;
-		background: linear-gradient(
-			45deg,
-			#4776E6,
-			#8E54E9,
-			#4776E6
-		);
-		background-size: 200% 200%;
-		animation: gradientMove 15s ease infinite;
-	}
-	
-	.bubble-group {
+	.animated-background {
 		position: absolute;
 		width: 100%;
 		height: 100%;
 		
-		.bubble {
+		.gradient-layer {
 			position: absolute;
-			background: rgba(255, 255, 255, 0.1);
-			border-radius: 50%;
-			backdrop-filter: blur(5px);
-			animation: floatBubble 20s linear infinite;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: linear-gradient(135deg, #4B6EFF, #55ACEE);
+			animation: gradientMove 15s ease infinite;
+		}
+		
+		.bubble-group {
+			position: absolute;
+			width: 100%;
+			height: 100%;
 			
-			&:nth-child(1) {
-				width: 120rpx;
-				height: 120rpx;
-				left: 10%;
-				top: 20%;
-				animation-delay: 0s;
+			.bubble {
+				position: absolute;
+				border-radius: 50%;
+				background: rgba(255, 255, 255, 0.1);
+				animation: floatBubble 15s infinite ease-in;
+				
+				&:nth-child(1) {
+					width: 120rpx;
+					height: 120rpx;
+					left: 10%;
+					bottom: -60rpx;
+					animation-duration: 25s;
+					animation-delay: 0s;
+				}
+				
+				&:nth-child(2) {
+					width: 80rpx;
+					height: 80rpx;
+					left: 30%;
+					bottom: -40rpx;
+					animation-duration: 20s;
+					animation-delay: 2s;
+				}
+				
+				&:nth-child(3) {
+					width: 160rpx;
+					height: 160rpx;
+					left: 50%;
+					bottom: -80rpx;
+					animation-duration: 28s;
+					animation-delay: 1s;
+				}
+				
+				&:nth-child(4) {
+					width: 100rpx;
+					height: 100rpx;
+					left: 70%;
+					bottom: -50rpx;
+					animation-duration: 22s;
+					animation-delay: 3s;
+				}
+				
+				&:nth-child(5) {
+					width: 140rpx;
+					height: 140rpx;
+					left: 85%;
+					bottom: -70rpx;
+					animation-duration: 26s;
+					animation-delay: 2s;
+				}
+				
+				&:nth-child(6) {
+					width: 180rpx;
+					height: 180rpx;
+					left: 5%;
+					bottom: -90rpx;
+					animation-duration: 30s;
+					animation-delay: 0.5s;
+				}
 			}
-			
-			&:nth-child(2) {
-				width: 160rpx;
-				height: 160rpx;
-				left: 65%;
-				top: 40%;
-				animation-delay: -5s;
-			}
-			
-			&:nth-child(3) {
-				width: 90rpx;
-				height: 90rpx;
-				left: 30%;
-				top: 60%;
-				animation-delay: -10s;
-			}
-			
-			&:nth-child(4) {
-				width: 140rpx;
-				height: 140rpx;
-				left: 85%;
-				top: 15%;
-				animation-delay: -15s;
-			}
-			
-			&:nth-child(5) {
-				width: 110rpx;
-				height: 110rpx;
-				left: 50%;
-				top: 75%;
-				animation-delay: -8s;
-			}
-			
-			&:nth-child(6) {
-				width: 130rpx;
-				height: 130rpx;
-				left: 15%;
-				top: 85%;
-				animation-delay: -12s;
-			}
+		}
+	}
+	
+	.avatar-box {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -70%);
+		width: 160rpx;
+		height: 160rpx;
+		background: #fff;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+		animation: pulseAvatar 4s ease infinite;
+		z-index: 2;
+		
+		.avatar-image {
+			width: 120rpx;
+			height: 120rpx;
 		}
 	}
 }
 
-.avatar-box {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -70%);
-	width: 140rpx;
-	height: 140rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: rgba(255, 255, 255, 0.15);
-	border-radius: 50%;
-	backdrop-filter: blur(10px);
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-	border: 1px solid rgba(255, 255, 255, 0.2);
-	animation: pulseAvatar 2s ease-in-out infinite;
-}
-
 .login-form {
 	position: relative;
-	margin-top: -50rpx;
-	padding: 60rpx 40rpx;
+	margin-top: -60rpx;
 	background: #fff;
 	border-radius: 40rpx 40rpx 0 0;
-	box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+	flex: 1;
+	padding: 90rpx 50rpx 50rpx;
+	box-shadow: 0 -20rpx 60rpx rgba(0, 0, 0, 0.1);
+	z-index: 1;
+}
+
+.welcome {
+	text-align: center;
+	margin-bottom: 60rpx;
 	
-	.welcome {
-		margin-bottom: 60rpx;
-		
-		.title {
-			display: block;
-			font-size: 48rpx;
-			font-weight: 600;
-			color: #333;
-			margin-bottom: 16rpx;
-		}
-		
-		.subtitle {
-			font-size: 28rpx;
-			color: #999;
-		}
+	.title {
+		font-size: 48rpx;
+		font-weight: 600;
+		color: #333;
+		margin-bottom: 16rpx;
+		display: block;
+	}
+	
+	.subtitle {
+		font-size: 28rpx;
+		color: #999;
 	}
 }
 
@@ -292,15 +297,17 @@ export default {
 		border-radius: 16rpx;
 		margin-bottom: 30rpx;
 		transition: all 0.3s;
+		border: 2rpx solid transparent;
 		
 		&:focus-within {
 			background: #fff;
-			box-shadow: 0 0 0 2px rgba(74,115,243,0.2);
+			border-color: #4B6EFF;
+			box-shadow: 0 0 0 4rpx rgba(75, 110, 255, 0.1);
 		}
 		
 		.iconfont {
 			font-size: 40rpx;
-			color: #4a73f3;
+			color: #4B6EFF;
 			margin-right: 20rpx;
 		}
 		
@@ -308,6 +315,9 @@ export default {
 			flex: 1;
 			font-size: 28rpx;
 			color: #333;
+			background: transparent;
+			border: none;
+			padding: 0;
 		}
 		
 		.placeholder {
@@ -321,7 +331,7 @@ export default {
 	height: 100rpx;
 	line-height: 100rpx;
 	text-align: center;
-	background: linear-gradient(135deg, #6e8efb, #4a73f3);
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
 	color: #fff;
 	font-size: 32rpx;
 	font-weight: 500;
@@ -335,6 +345,7 @@ export default {
 	
 	&:active {
 		transform: scale(0.98);
+		box-shadow: 0 6rpx 20rpx rgba(75, 110, 255, 0.3);
 	}
 }
 
@@ -358,7 +369,7 @@ export default {
 	}
 	
 	.register {
-		color: #4a73f3;
+		color: #4B6EFF;
 		font-weight: 500;
 	}
 }

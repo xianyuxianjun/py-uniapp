@@ -49,18 +49,28 @@ const handleLogin = async () => {
 
   loading.value = true
   try {
-    const res = await http.post('/auth/login', loginForm.value)
+    const res = await http.post('/auth/login', {
+      email: loginForm.value.email,
+      passwordHash: loginForm.value.passwordHash
+    })
+    
+    console.log('登录响应:', res) // 添加调试日志
+    
     if (res.data.code === 1) {
       message.success('登录成功')
+      // 保存用户信息
       localStorage.setItem('userId', res.data.data.id)
+      localStorage.setItem('userInfo', JSON.stringify(res.data.data))
+      // 跳转到首页
       router.push('/')
     } else {
-      message.error(res.data.message || '登录失败')
+      message.error(res.data.msg || '登录失败')
     }
   } catch (error) {
-    message.error('登录失败，请稍后重试')
+    console.error('登录错误:', error) // 添加错误日志
+    message.error('登录失败：' + (error.response?.data?.msg || error.message))
   } finally {
-    loading.value = falsei
+    loading.value = false
   }
 }
 
@@ -89,7 +99,7 @@ const handleRegister = async () => {
         confirmPasswordHash: ''
       }
     } else {
-      message.error(res.data.message || '注册失败')
+      message.error(res.data.msg || '注册失败')
     }
   } catch (error) {
     message.error('注册失败，请稍后重试')
@@ -254,13 +264,6 @@ const handleRegister = async () => {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  transform: translateY(0);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.login-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.25);
 }
 
 .card-side {
@@ -280,9 +283,6 @@ const handleRegister = async () => {
   position: absolute;
   left: 0;
   height: 100%;
-  background-image: 
-    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 60%),
-    linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .info.move-left {
@@ -405,31 +405,12 @@ p {
 @media (max-width: 768px) {
   .login-card {
     width: 100%;
-    min-height: 100vh;
-    border-radius: 0;
     flex-direction: column;
   }
 
   .card-side {
     width: 100%;
-    padding: 30px;
-  }
-
-  .info {
     position: relative;
-    padding: 40px 20px;
-  }
-
-  .auth-form {
-    margin-top: 20px;
-  }
-
-  h2 {
-    font-size: 28px;
-  }
-
-  .info h2 {
-    font-size: 32px;
   }
 
   .info.move-left {

@@ -86,8 +86,11 @@ const handleProfileClick = () => {
 }
 
 const handleLogout = () => {
-  // 这里添加退出登录的逻辑
-  console.log('退出登录')
+  // 清除用户信息
+  localStorage.removeItem('userInfo')
+  localStorage.removeItem('userId')
+  // 使用路由跳转到登录页
+  router.push('/login')
   profileMenu.value = false
 }
 </script>

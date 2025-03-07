@@ -58,9 +58,11 @@ export default {
 	},
 	
 	methods: {
-		// 返回上一页
+		// 修改返回方法，确保返回到首页
 		navigateBack() {
-			uni.navigateBack()
+			uni.switchTab({
+				url: '/pages/index/index'
+			})
 		},
 		
 		// 加载废品分类数据
@@ -99,148 +101,197 @@ export default {
 	flex-direction: column;
 }
 
+.status-bar {
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
+}
+
+/* 顶部导航栏 - 与其他页面保持一致 */
 .nav-bar {
 	height: 44px;
 	display: flex;
 	align-items: center;
-	padding: 0 16px;
-	background: #fff;
+	justify-content: center;
+	padding: 0;
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
 	position: relative;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	width: 100%;
+	box-sizing: border-box;
 	
 	.left {
-		padding: 8px;
-		margin-left: -8px;
+		position: absolute;
+		left: 8px;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(255, 255, 255, 0.2);
+		border-radius: 50%;
+		backdrop-filter: blur(5px);
+		z-index: 2;
 		
 		&:active {
-			opacity: 0.7;
+			background: rgba(255, 255, 255, 0.3);
 		}
 	}
 	
 	.title {
-		position: absolute;
-		left: 50%;
-		transform: translateX(-50%);
-		font-size: 17px;
+		font-size: 18px;
 		font-weight: 600;
-		color: #333;
+		color: #fff;
+		position: relative;
+		z-index: 1;
+		padding: 0 44px;
+		text-align: center;
 	}
 }
 
+/* 分类统计区域优化 */
 .category-stats {
-	padding: 16rpx 30rpx;
+	padding: 24rpx 30rpx;
 	background: #fff;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.03);
 	
 	.total {
-		font-size: 24rpx;
+		font-size: 26rpx;
 		color: #666;
 		display: flex;
 		align-items: center;
 		
 		&::before {
 			content: '';
-			width: 6rpx;
-			height: 6rpx;
-			background: #2979ff;
+			width: 10rpx;
+			height: 10rpx;
+			background: linear-gradient(135deg, #4B6EFF, #55ACEE);
 			border-radius: 50%;
-			margin-right: 8rpx;
+			margin-right: 12rpx;
+			box-shadow: 0 0 0 4rpx rgba(75, 110, 255, 0.1);
 		}
 	}
 }
 
+/* 废品列表区域优化 */
 .waste-list {
 	flex: 1;
-	padding: 16rpx;
+	padding: 24rpx 16rpx;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .waste-items {
 	display: flex;
 	flex-direction: column;
-	gap: 16rpx;
+	gap: 24rpx;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .waste-item {
 	background: #fff;
-	border-radius: 12rpx;
+	border-radius: 20rpx;
 	overflow: hidden;
-	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+	box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.05);
 	display: flex;
 	width: 100%;
 	box-sizing: border-box;
+	transition: all 0.3s ease;
+	
+	&:active {
+		transform: translateY(-8rpx);
+		box-shadow: 0 16rpx 30rpx rgba(0, 0, 0, 0.08);
+	}
 	
 	.waste-image {
-		width: 160rpx;
-		height: 160rpx;
+		width: 180rpx;
+		height: 180rpx;
 		flex-shrink: 0;
 		background: #f5f7fa;
+		object-fit: cover;
 	}
 	
 	.waste-content {
 		flex: 1;
 		min-width: 0;
-		padding: 16rpx;
+		padding: 20rpx 16rpx;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
+		width: calc(100% - 180rpx);
+		box-sizing: border-box;
 	}
 	
 	.waste-info {
 		display: flex;
 		align-items: flex-start;
-		gap: 16rpx;
+		width: 100%;
+		box-sizing: border-box;
 		
 		.name {
 			flex: 1;
-			font-size: 28rpx;
+			font-size: 32rpx;
 			font-weight: 600;
 			color: #333;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
+			padding-right: 10rpx;
+			max-width: 60%;
 		}
 		
 		.price {
 			flex-shrink: 0;
 			text-align: right;
+			min-width: 120rpx;
 			
 			.amount {
-				font-size: 32rpx;
-				color: #ff6b6b;
+				font-size: 36rpx;
+				color: #ff5151;
 				font-weight: 600;
+				font-family: 'DIN Alternate', -apple-system, BlinkMacSystemFont, sans-serif;
 				
 				&::before {
 					content: '¥';
 					font-size: 22rpx;
 					margin-right: 2rpx;
+					vertical-align: middle;
 				}
 			}
 			
 			.unit {
-				font-size: 20rpx;
+				font-size: 22rpx;
 				color: #999;
 				display: block;
+				margin-top: 4rpx;
 			}
 		}
 	}
 	
 	.waste-desc {
-		margin-top: 8rpx;
+		margin-top: 16rpx;
+		background-color: #f9fafb;
+		padding: 12rpx;
+		border-radius: 12rpx;
+		width: 100%;
+		box-sizing: border-box;
 		
 		text {
-			font-size: 24rpx;
+			font-size: 26rpx;
 			color: #666;
-			line-height: 1.4;
+			line-height: 1.6;
 			display: -webkit-box;
 			-webkit-box-orient: vertical;
-			-webkit-line-clamp: 2;
+			-webkit-line-clamp: 3;
 			overflow: hidden;
+			word-break: break-all;
 		}
 	}
-	
-	&:active {
-		transform: scale(0.99);
-		opacity: 0.9;
-	}
+}
+
+/* 添加滚动到底部的安全区域 */
+.safe-area-bottom {
+	height: calc(env(safe-area-inset-bottom) + 30rpx);
 }
 </style> 

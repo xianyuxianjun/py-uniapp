@@ -82,9 +82,12 @@ export default {
 	},
 	
 	methods: {
-		// 返回上一页
+		// 修改返回按钮的处理方法
 		navigateBack() {
-			uni.navigateBack()
+			// 使用switchTab跳转到tabBar页面(首页)
+			uni.switchTab({
+				url: '/pages/index/index'
+			})
 		},
 		
 		// 加载订单数据
@@ -185,217 +188,189 @@ export default {
 <style lang="scss">
 .container {
 	min-height: 100vh;
-	background-color: #f5f7fa;
+	background-color: #f8f9fc;
 	display: flex;
 	flex-direction: column;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.status-bar {
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
 }
 
 .nav-bar {
 	height: 44px;
 	display: flex;
 	align-items: center;
-	padding: 0 16px;
-	background: #fff;
+	justify-content: center;
+	padding: 0;
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
 	position: relative;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	width: 100%;
+	box-sizing: border-box;
 	
 	.left {
-		padding: 8px;
-		margin-left: -8px;
+		position: absolute;
+		left: 8px;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(255, 255, 255, 0.2);
+		border-radius: 50%;
+		backdrop-filter: blur(5px);
+		z-index: 2;
 		
 		&:active {
-			opacity: 0.7;
+			background: rgba(255, 255, 255, 0.3);
 		}
 	}
 	
 	.title {
-		position: absolute;
-		left: 50%;
-		transform: translateX(-50%);
-		font-size: 17px;
+		font-size: 18px;
 		font-weight: 600;
-		color: #333;
+		color: #fff;
+		position: relative;
+		z-index: 1;
+		padding: 0 44px;
+		text-align: center;
 	}
 }
 
+/* 优化订单列表，确保右侧内容可见 */
 .order-list {
 	flex: 1;
 	padding: 20rpx;
+	box-sizing: border-box;
+	width: 100%;
 }
 
 .order-item {
 	background: #fff;
 	border-radius: 16rpx;
-	margin-bottom: 20rpx;
-	overflow: hidden;
+	margin-bottom: 24rpx;
+	padding: 24rpx;
 	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+	width: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
 	
 	.order-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 24rpx;
-		background: linear-gradient(to right, rgba(41, 121, 255, 0.05), transparent);
-		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		padding-bottom: 20rpx;
+		border-bottom: 1px solid #f0f0f0;
+		width: 100%;
+		box-sizing: border-box;
 		
 		.order-time {
-			font-size: 26rpx;
+			font-size: 28rpx;
 			color: #666;
-			display: flex;
-			align-items: center;
-			
-			&::before {
-				content: '';
-				width: 6rpx;
-				height: 6rpx;
-				background: #2979ff;
-				border-radius: 50%;
-				margin-right: 8rpx;
-			}
 		}
 		
 		.order-status {
 			font-size: 26rpx;
-			font-weight: 600;
-			padding: 6rpx 16rpx;
-			border-radius: 8rpx;
+			padding: 4rpx 16rpx;
+			border-radius: 30rpx;
 			
 			&.pending {
 				color: #ff9800;
 				background: rgba(255, 152, 0, 0.1);
-				border: 1px solid rgba(255, 152, 0, 0.2);
-			}
-			
-			&.processing {
-				color: #2979ff;
-				background: rgba(41, 121, 255, 0.1);
-				border: 1px solid rgba(41, 121, 255, 0.2);
 			}
 			
 			&.completed {
 				color: #4caf50;
 				background: rgba(76, 175, 80, 0.1);
-				border: 1px solid rgba(76, 175, 80, 0.2);
 			}
 			
 			&.cancelled {
-				color: #999;
-				background: rgba(0, 0, 0, 0.05);
-				border: 1px solid rgba(0, 0, 0, 0.08);
+				color: #f44336;
+				background: rgba(244, 67, 54, 0.1);
 			}
 		}
 	}
 	
 	.order-content {
-		padding: 24rpx;
+		padding: 20rpx 0;
+		width: 100%;
+		box-sizing: border-box;
 		
 		.info-item {
 			display: flex;
 			margin-bottom: 16rpx;
+			width: 100%;
+			box-sizing: border-box;
 			
 			&:last-child {
 				margin-bottom: 0;
 			}
 			
-			&.address {
-				align-items: flex-start;
-			}
-			
 			.label {
-				width: 140rpx;
-				font-size: 26rpx;
-				color: #999;
+				width: 150rpx;
 				flex-shrink: 0;
-				position: relative;
-				padding-left: 20rpx;
-				
-				&::before {
-					content: '';
-					position: absolute;
-					left: 0;
-					top: 50%;
-					transform: translateY(-50%);
-					width: 8rpx;
-					height: 8rpx;
-					background: #e8e8e8;
-					border-radius: 50%;
-				}
+				font-size: 28rpx;
+				color: #999;
 			}
 			
 			.value {
 				flex: 1;
-				font-size: 26rpx;
+				font-size: 28rpx;
 				color: #333;
-				line-height: 1.6;
+				word-break: break-all;
+				padding-right: 10rpx;
+			}
+			
+			&.address {
+				.value {
+					line-height: 1.4;
+				}
 			}
 		}
 	}
 	
 	.order-footer {
-		margin: 0 24rpx;
-		padding: 24rpx 0;
-		border-top: 1px solid rgba(0, 0, 0, 0.05);
 		display: flex;
 		justify-content: flex-end;
-		gap: 20rpx;
+		border-top: 1px solid #f0f0f0;
+		padding-top: 20rpx;
+		width: 100%;
+		box-sizing: border-box;
 		
 		.cancel-btn {
+			background: #fff;
+			color: #ff5151;
+			border: 1px solid #ff5151;
 			font-size: 26rpx;
-			color: #666;
-			background: #f5f5f5;
-			padding: 12rpx 32rpx;
-			border-radius: 8rpx;
+			padding: 8rpx 30rpx;
+			border-radius: 30rpx;
+			line-height: 1.5;
+			height: auto;
 			margin: 0;
-			border: 1px solid rgba(0, 0, 0, 0.05);
-			transition: all 0.3s;
-			
-			&:active {
-				transform: scale(0.98);
-				background: #f0f0f0;
-			}
 		}
-		
-		.contact-btn {
-			font-size: 26rpx;
-			color: #2979ff;
-			background: rgba(41, 121, 255, 0.1);
-			padding: 12rpx 32rpx;
-			border-radius: 8rpx;
-			margin: 0;
-			border: 1px solid rgba(41, 121, 255, 0.2);
-			transition: all 0.3s;
-			
-			&:active {
-				transform: scale(0.98);
-				background: rgba(41, 121, 255, 0.15);
-			}
-		}
-	}
-	
-	// 添加卡片悬停效果
-	&:active {
-		transform: translateY(2rpx);
-		box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 	}
 }
 
 .empty-state {
-	padding: 120rpx 0;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	justify-content: center;
+	padding: 100rpx 0;
 	
 	image {
-		width: 240rpx;
-		height: 240rpx;
+		width: 200rpx;
+		height: 200rpx;
 		margin-bottom: 30rpx;
-		opacity: 0.8;
 	}
 	
 	text {
 		font-size: 28rpx;
 		color: #999;
-		letter-spacing: 1px;
 	}
 }
 

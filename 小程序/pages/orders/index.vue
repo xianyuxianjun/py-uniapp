@@ -8,74 +8,101 @@
 			<text class="title">我的单子</text>
 		</view>
 		
+		<!-- 订单标签切换 -->
+		<view class="order-tabs">
+			<view class="tab-item" 
+				:class="{ active: activeTab === 0 }"
+				@click="switchTab(0)"
+			>全部</view>
+			<view class="tab-item"
+				:class="{ active: activeTab === 2 }"
+				@click="switchTab(2)"
+			>已接单</view>
+			<view class="tab-item"
+				:class="{ active: activeTab === 3 }"
+				@click="switchTab(3)"
+			>已完成</view>
+		</view>
+		
 		<!-- 订单列表 -->
-		<scroll-view class="order-list" scroll-y refresher-enabled 
+		<scroll-view class="order-list" scroll-y refresher-enabled
 			:refresher-triggered="refreshing" @refresherrefresh="onRefresh">
 			
-			<!-- 订单卡片 -->
-			<view class="order-items" v-if="orders.length > 0">
-				<view class="order-item" v-for="order in orders" :key="order.id" @tap="viewOrderDetail(order)">
+			<block v-if="filteredOrders.length > 0">
+				<view class="order-item" v-for="order in filteredOrders" :key="order.id">
+					<!-- 状态标签 -->
+					<text class="status-tag" 
+						:class="{
+							'completed': order.status === 3,
+							'canceled': order.status === 4
+						}"
+					>{{ getStatusText(order.status) }}</text>
+					
+					<!-- 订单头部 -->
 					<view class="order-header">
-						<text class="order-id">订单号：{{order.id}}</text>
-						<text class="order-status" :class="'status-' + order.status">
-							{{getStatusText(order.status)}}
-						</text>
+						<uni-icons class="order-icon" type="email-filled" size="24" color="#4B6EFF"></uni-icons>
+						<text class="order-id">订单号：{{ order.id }}</text>
+						<text class="order-time">{{ formatTime(order.createdAt) }}</text>
 					</view>
 					
+					<!-- 订单内容 -->
 					<view class="order-content">
-						<!-- 预约时间 -->
-						<view class="info-row">
-							<uni-icons type="calendar" size="16" color="#666"></uni-icons>
+						<view class="info-item">
+							<uni-icons class="icon" type="calendar" size="16" color="#4B6EFF"></uni-icons>
 							<text class="label">预约时间：</text>
-							<text class="value">{{formatDate(order.appointmentTime)}}</text>
+							<text class="value">{{ formatDate(order.appointmentTime) }}</text>
 						</view>
 						
-						<!-- 联系人信息 -->
-						<view class="info-row">
-							<uni-icons type="person" size="16" color="#666"></uni-icons>
+						<view class="info-item">
+							<uni-icons class="icon" type="person" size="16" color="#4B6EFF"></uni-icons>
 							<text class="label">联系人：</text>
-							<text class="value">{{order.contactName}}</text>
-							<text class="phone">{{order.contactPhone}}</text>
+							<text class="value">{{ order.contactName }} {{ order.contactPhone }}</text>
 						</view>
 						
-						<!-- 地址信息 -->
-						<view class="info-row address">
-							<uni-icons type="location" size="16" color="#666"></uni-icons>
+						<view class="info-item address">
+							<uni-icons class="icon" type="location" size="16" color="#4B6EFF"></uni-icons>
 							<text class="label">地址：</text>
-							<text class="value">{{order.address}}</text>
+							<text class="value">{{ order.address }}</text>
 						</view>
 						
-						<!-- 备注信息 -->
-						<view class="info-row" v-if="order.notes">
-							<uni-icons type="info" size="16" color="#666"></uni-icons>
+						<view class="info-item" v-if="order.notes">
+							<uni-icons class="icon" type="info" size="16" color="#4B6EFF"></uni-icons>
 							<text class="label">备注：</text>
-							<text class="value">{{order.notes}}</text>
+							<text class="value">{{ order.notes }}</text>
 						</view>
 					</view>
 					
+					<!-- 订单底部 -->
 					<view class="order-footer">
-						<view class="time-info">
-							<text class="created-time">{{formatTime(order.createdAt)}}</text>
+						<view class="distance" v-if="order.latitude && order.longitude">
+							<uni-icons class="icon" type="navigate" size="16" color="#4B6EFF"></uni-icons>
+							<text class="value">距离：<text>{{ calculateDistance(order.latitude, order.longitude) }}</text></text>
 						</view>
-						<view class="action-btns">
-							<button class="action-btn complete" 
+						
+						<view class="action-buttons">
+							<button class="complete-btn" 
 								v-if="order.status === 2"
-								@tap.stop="handleCompleteOrder(order.id)"
+								@click="handleCompleteOrder(order.id)"
 							>完成订单</button>
-							<button class="action-btn navigate" 
-								@tap.stop="handleNavigate(order)"
+							
+							<button class="nav-btn" 
+								v-if="order.status !== 4"
+								@click="navigateTo(order.latitude, order.longitude, order.address)"
 							>导航</button>
 						</view>
 					</view>
 				</view>
-			</view>
+			</block>
 			
 			<!-- 空状态 -->
-			<view class="empty-state" v-else>
+			<view class="empty-state" v-if="filteredOrders.length === 0">
 				<image src="/static/images/empty-order.png" mode="aspectFit"></image>
-				<text>暂无接单</text>
-				<text class="sub-text">快去接单赚钱吧~</text>
+				<text class="empty-text">暂无相关订单</text>
+				<text class="empty-sub-text">有新订单时会在这里显示</text>
 			</view>
+			
+			<!-- 底部安全区域 -->
+			<view class="safe-area-bottom"></view>
 		</scroll-view>
 		
 		<uni-popup ref="popup" type="center">
@@ -137,7 +164,9 @@ export default {
 				distance: '',
 				duration: '',
 				address: ''
-			}
+			},
+			activeTab: 0,
+			filteredOrders: []
 		}
 	},
 	
@@ -164,6 +193,9 @@ export default {
 		this.statusBarHeight = uni.getSystemInfoSync().statusBarHeight
 		this.userInfo = userInfo
 		this.loadOrders()
+		
+		// 获取当前位置
+		this.getCurrentUserLocation()
 	},
 	
 	methods: {
@@ -179,6 +211,7 @@ export default {
 				
 				if (res.data.code === 1) {
 					this.orders = res.data.data
+					this.filteredOrders = res.data.data
 				} else {
 					uni.showToast({
 						title: '加载失败',
@@ -226,10 +259,12 @@ export default {
 			return statusMap[status] || '未知状态'
 		},
 		
-		// 查看订单详情
-		viewOrderDetail(order) {
-			uni.navigateTo({
-				url: `/pages/order-detail/index?id=${order.id}`
+		// 切换标签
+		switchTab(tab) {
+			this.activeTab = tab
+			this.filteredOrders = this.orders.filter(order => {
+				if (this.activeTab === 0) return true
+				return order.status === this.activeTab
 			})
 		},
 		
@@ -250,9 +285,64 @@ export default {
 			this.$refs.popup.close()
 		},
 		
+		// 获取用户当前位置
+		getCurrentUserLocation() {
+			uni.getLocation({
+				type: 'gcj02',
+				success: (res) => {
+					this.currentLocation = {
+						latitude: res.latitude,
+						longitude: res.longitude
+					}
+				},
+				fail: (err) => {
+					console.error('获取位置失败', err)
+					uni.showToast({
+						title: '获取位置失败，无法计算距离',
+						icon: 'none'
+					})
+				}
+			})
+		},
+		
+		// 计算距离
+		calculateDistance(targetLat, targetLng) {
+			if (!targetLat || !targetLng || 
+				!this.currentLocation.latitude || 
+				!this.currentLocation.longitude) {
+				return '未知'
+			}
+			
+			// 将角度转换为弧度
+			const radLat1 = (this.currentLocation.latitude * Math.PI) / 180
+			const radLat2 = (targetLat * Math.PI) / 180
+			const radLng1 = (this.currentLocation.longitude * Math.PI) / 180
+			const radLng2 = (targetLng * Math.PI) / 180
+			
+			// 地球半径（千米）
+			const EARTH_RADIUS = 6378.137
+			
+			// 计算距离
+			const dLat = radLat2 - radLat1
+			const dLng = radLng2 - radLng1
+			const distance = 2 * Math.asin(
+				Math.sqrt(
+					Math.pow(Math.sin(dLat / 2), 2) +
+					Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(dLng / 2), 2)
+				)
+			) * EARTH_RADIUS
+			
+			// 格式化距离显示
+			if (distance < 1) {
+				return Math.round(distance * 1000) + '米'
+			} else {
+				return distance.toFixed(1) + '公里'
+			}
+		},
+		
 		// 导航到订单地址
-		async handleNavigate(order) {
-			if (!order.latitude || !order.longitude) {
+		async navigateTo(latitude, longitude, address) {
+			if (!latitude || !longitude) {
 				uni.showToast({
 					title: '无法获取地址坐标',
 					icon: 'none'
@@ -262,10 +352,10 @@ export default {
 			
 			try {
 				await openNavigation(
-					order.latitude,
-					order.longitude,
-					order.contactName,
-					order.address
+					latitude,
+					longitude,
+					'联系人',
+					address
 				)
 			} catch (error) {
 				uni.showToast({
@@ -301,205 +391,270 @@ export default {
 <style lang="scss">
 .container {
 	min-height: 100vh;
-	background: #f5f5f5;
+	background-color: #f5f7fa;
+	display: flex;
+	flex-direction: column;
 }
 
+.status-bar {
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
+}
+
+/* 导航栏样式 */
 .nav-bar {
-	position: sticky;
-	top: 0;
-	z-index: 100;
-	background: #fff;
 	height: 44px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0 15px;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	padding: 0;
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
+	width: 100%;
+	box-sizing: border-box;
+	position: relative;
 	
 	.title {
-		font-size: 16px;
+		font-size: 18px;
 		font-weight: 600;
-		color: #333;
+		color: #fff;
+		letter-spacing: 1px;
 	}
 }
 
+/* 订单标签切换 */
+.order-tabs {
+	display: flex;
+	background: #fff;
+	padding: 4rpx 16rpx 0;
+	border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.03);
+	
+	.tab-item {
+		flex: 1;
+		text-align: center;
+		padding: 24rpx 0;
+		font-size: 28rpx;
+		color: #666;
+		position: relative;
+		transition: all 0.3s;
+		
+		&.active {
+			color: #4B6EFF;
+			font-weight: 500;
+			
+			&::after {
+				content: '';
+				position: absolute;
+				bottom: 0;
+				left: 25%;
+				right: 25%;
+				height: 6rpx;
+				background: linear-gradient(to right, #4B6EFF, #55ACEE);
+				border-radius: 6rpx 6rpx 0 0;
+			}
+		}
+	}
+}
+
+/* 订单列表 */
 .order-list {
-	padding: 15px;
+	flex: 1;
+	padding: 24rpx 20rpx;
+	box-sizing: border-box;
+	width: 100%;
 }
 
 .order-item {
 	background: #fff;
-	border-radius: 12px;
-	padding: 15px;
-	margin-bottom: 15px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	border-radius: 20rpx;
+	padding: 30rpx;
+	margin-bottom: 24rpx;
+	box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.04);
+	position: relative;
+	width: 100%;
+	box-sizing: border-box;
+	
+	.status-tag {
+		position: absolute;
+		top: 30rpx;
+		right: 30rpx;
+		font-size: 24rpx;
+		padding: 6rpx 20rpx;
+		border-radius: 30rpx;
+		background-color: #ffeed6;
+		color: #ff9800;
+		font-weight: 500;
+		
+		&.completed {
+			background-color: #e3f8e4;
+			color: #4caf50;
+		}
+		
+		&.canceled {
+			background-color: #f5f5f5;
+			color: #999;
+		}
+	}
 	
 	.order-header {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 12px;
+		padding-bottom: 20rpx;
+		border-bottom: 1px dashed #eee;
+		margin-bottom: 20rpx;
+		padding-right: 100rpx; /* 为右侧状态腾出空间 */
 		
-		.order-id {
-			font-size: 14px;
-			color: #666;
+		.order-icon {
+			margin-right: 16rpx;
+			color: #4B6EFF;
 		}
 		
-		.order-status {
-			font-size: 14px;
-			font-weight: 500;
-			
-			&.status-1 {
-				color: #2979ff;
-			}
-			
-			&.status-2 {
-				color: #ff9800;
-			}
-			
-			&.status-3 {
-				color: #4caf50;
-			}
-			
-			&.status-4 {
-				color: #999;
-			}
+		.order-id {
+			font-size: 32rpx;
+			font-weight: 600;
+			color: #333;
+		}
+		
+		.order-time {
+			font-size: 24rpx;
+			color: #999;
+			margin-left: auto;
+			margin-right: 16rpx;
 		}
 	}
 	
 	.order-content {
-		.info-row {
+		.info-item {
 			display: flex;
-			align-items: center;
-			margin-bottom: 10px;
+			margin-bottom: 16rpx;
+			align-items: flex-start;
+			
+			.icon {
+				margin-right: 16rpx;
+				flex-shrink: 0;
+				color: #4B6EFF;
+				opacity: 0.85;
+			}
 			
 			.label {
-				font-size: 14px;
+				width: 150rpx;
+				flex-shrink: 0;
+				font-size: 28rpx;
 				color: #666;
-				margin: 0 5px;
 			}
 			
 			.value {
-				font-size: 14px;
+				flex: 1;
+				font-size: 28rpx;
 				color: #333;
-			}
-			
-			.phone {
-				margin-left: 10px;
-				font-size: 14px;
-				color: #666;
+				word-break: break-all; /* 确保长文本可以换行 */
+				padding-right: 20rpx; /* 确保右侧有足够空间 */
+				line-height: 1.5;
 			}
 			
 			&.address {
-				align-items: flex-start;
-				
 				.value {
-					flex: 1;
-					line-height: 1.4;
+					line-height: 1.6;
 				}
 			}
 		}
 	}
 	
 	.order-footer {
-		margin-top: 15px;
-		padding-top: 15px;
-		border-top: 1px solid #f0f0f0;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		margin-top: 24rpx;
+		padding-top: 20rpx;
+		border-top: 1px dashed #eee;
 		
-		.time-info {
-			.created-time {
-				font-size: 14px;
-				color: #999;
+		.distance {
+			display: flex;
+			align-items: center;
+			
+			.icon {
+				margin-right: 8rpx;
+				color: #4B6EFF;
+			}
+			
+			.value {
+				font-size: 26rpx;
+				color: #666;
+				
+				text {
+					color: #4B6EFF;
+					font-weight: 500;
+				}
 			}
 		}
 		
-		.action-btns {
+		.action-buttons {
 			display: flex;
-			gap: 12px;
+			gap: 16rpx;
+		}
+		
+		.complete-btn {
+			padding: 14rpx 36rpx;
+			background: linear-gradient(135deg, #4CAF50, #8BC34A);
+			color: #fff;
+			border-radius: 40rpx;
+			font-size: 28rpx;
+			font-weight: 500;
+			box-shadow: 0 4rpx 12rpx rgba(76, 175, 80, 0.2);
+			transition: all 0.3s;
 			
-			.action-btn {
-				margin: 0;
-				padding: 0 20px;
-				height: 36px;
-				line-height: 36px;
-				font-size: 14px;
-				border-radius: 18px;
-				position: relative;
-				overflow: hidden;
-				transition: all 0.3s ease;
-				
-				&.complete {
-					color: #fff;
-					background: linear-gradient(135deg, #4CAF50, #45a049);
-					box-shadow: 0 2px 6px rgba(76, 175, 80, 0.3);
-					
-					&:active {
-						transform: translateY(1px);
-						box-shadow: 0 1px 3px rgba(76, 175, 80, 0.3);
-					}
-				}
-				
-				&.navigate {
-					color: #fff;
-					background: linear-gradient(135deg, #2979ff, #1565C0);
-					box-shadow: 0 2px 6px rgba(41, 121, 255, 0.3);
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					
-					&::before {
-						content: '';
-						width: 16px;
-						height: 16px;
-						margin-right: 4px;
-						background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>') no-repeat center;
-						background-size: contain;
-					}
-					
-					&:active {
-						transform: translateY(1px);
-						box-shadow: 0 1px 3px rgba(41, 121, 255, 0.3);
-					}
-				}
-				
-				&:disabled {
-					opacity: 0.6;
-					cursor: not-allowed;
-				}
-				
-				&::after {
-					border: none;
-				}
+			&:active {
+				transform: scale(0.96);
+				opacity: 0.9;
+			}
+		}
+		
+		.nav-btn {
+			padding: 14rpx 36rpx;
+			background: linear-gradient(135deg, #4B6EFF, #55ACEE);
+			color: #fff;
+			border-radius: 40rpx;
+			font-size: 28rpx;
+			font-weight: 500;
+			box-shadow: 0 4rpx 12rpx rgba(75, 110, 255, 0.2);
+			transition: all 0.3s;
+			
+			&:active {
+				transform: scale(0.96);
+				opacity: 0.9;
 			}
 		}
 	}
 }
 
+/* 空状态 */
 .empty-state {
-	padding: 60px 0;
+	padding: 120rpx 0;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	
 	image {
-		width: 120px;
-		height: 120px;
-		margin-bottom: 15px;
+		width: 240rpx;
+		height: 240rpx;
+		margin-bottom: 30rpx;
+		opacity: 0.8;
 	}
 	
-	text {
-		font-size: 16px;
+	.empty-text {
+		font-size: 32rpx;
 		color: #333;
-		
-		&.sub-text {
-			font-size: 14px;
-			color: #999;
-			margin-top: 5px;
-		}
+		margin-bottom: 16rpx;
 	}
+	
+	.empty-sub-text {
+		font-size: 28rpx;
+		color: #999;
+	}
+}
+
+/* 底部安全区域 */
+.safe-area-bottom {
+	height: calc(env(safe-area-inset-bottom) + 30rpx);
 }
 
 .navigation-container {

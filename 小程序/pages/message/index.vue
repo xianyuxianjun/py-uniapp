@@ -1,12 +1,11 @@
 <template>
 	<view class="message-container">
 		<!-- 顶部导航栏 -->
-		<view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
-			<view class="nav-back" @click="goBack">
+		<view class="nav-bar">
+			<view class="left" @click="navigateBack">
 				<uni-icons type="left" size="20" color="#333"></uni-icons>
 			</view>
-			<text class="nav-title">消息通知</text>
-			<view class="nav-placeholder"></view>
+			<text class="title">消息通知</text>
 		</view>
 		
 		<!-- 内容区域 -->
@@ -106,8 +105,10 @@
 		},
 		methods: {
 			// 返回上一页
-			goBack() {
-				uni.navigateBack()
+			navigateBack() {
+				uni.switchTab({
+					url: '/pages/index/index'
+				})
 			},
 			
 			// 获取公告列表
@@ -183,29 +184,45 @@
 	background-color: #f5f7fa;
 }
 
-// 导航栏样式
 .nav-bar {
+	height: 44px;
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	height: 88rpx;
-	background-color: #fff;
-	box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+	justify-content: center;
+	padding: 0;
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
 	position: relative;
-	z-index: 10;
+	width: 100%;
+	box-sizing: border-box;
 	
-	.nav-back, .nav-placeholder {
-		width: 88rpx;
-		height: 88rpx;
+	.left {
+		position: absolute;
+		left: 8px;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 36px;
+		height: 36px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		background: rgba(255, 255, 255, 0.2);
+		border-radius: 50%;
+		backdrop-filter: blur(5px);
+		z-index: 2;
+		
+		&:active {
+			background: rgba(255, 255, 255, 0.3);
+		}
 	}
 	
-	.nav-title {
-		font-size: 32rpx;
-		font-weight: 500;
-		color: #333;
+	.title {
+		font-size: 18px;
+		font-weight: 600;
+		color: #fff;
+		position: relative;
+		z-index: 1;
+		padding: 0 44px;
+		text-align: center;
 	}
 }
 
@@ -213,7 +230,9 @@
 .message-content {
 	flex: 1;
 	height: 0;
-	padding: 30rpx;
+	padding: 30rpx 24rpx;
+	box-sizing: border-box;
+	width: 100%;
 }
 
 // 顶部提示样式
@@ -293,6 +312,8 @@
 		box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.05);
 		transition: all 0.2s ease;
 		display: flex;
+		width: 100%;
+		box-sizing: border-box;
 		
 		.announcement-icon {
 			margin-right: 20rpx;
@@ -301,40 +322,46 @@
 		
 		.announcement-content {
 			flex: 1;
+			min-width: 0;
 			
 			.announcement-header {
 				display: flex;
 				justify-content: space-between;
 				align-items: flex-start;
 				margin-bottom: 16rpx;
+				width: 100%;
+				box-sizing: border-box;
 				
 				.announcement-title {
 					font-size: 32rpx;
 					font-weight: 500;
 					color: #333;
-					flex: 1;
+					padding-right: 20rpx;
 				}
 				
 				.announcement-date {
 					font-size: 24rpx;
 					color: #999;
-					margin-left: 20rpx;
+					white-space: nowrap;
+					flex-shrink: 0;
 				}
 			}
 			
 			.content-body {
 				margin-bottom: 16rpx;
+				width: 100%;
+				box-sizing: border-box;
 				
 				.content-preview {
 					font-size: 28rpx;
 					color: #666;
 					line-height: 1.5;
-					// 多行文本截断
 					display: -webkit-box;
 					-webkit-box-orient: vertical;
 					-webkit-line-clamp: 2;
 					overflow: hidden;
 					text-overflow: ellipsis;
+					word-break: break-all;
 				}
 			}
 			
@@ -387,9 +414,9 @@
 	}
 	
 	.detail-content {
-		flex: 1;
-		height: 0;
-		padding: 0 30rpx;
+		padding: 0 30rpx 30rpx;
+		height: 60vh;
+		box-sizing: border-box;
 		
 		.detail-info {
 			padding: 20rpx 0;
@@ -408,6 +435,8 @@
 				font-size: 30rpx;
 				color: #333;
 				line-height: 1.6;
+				word-break: break-all;
+				white-space: pre-wrap;
 			}
 		}
 	}

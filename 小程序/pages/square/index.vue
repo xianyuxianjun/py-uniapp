@@ -14,49 +14,46 @@
 			
 			<!-- 订单卡片 -->
 			<view class="order-items" v-if="orders.length > 0">
-				<view class="order-item" v-for="order in orders" :key="order.id">
+				<view class="order-item" v-for="(order, index) in orders" :key="index">
+					<text class="status-tag">待接单</text>
+					
 					<view class="order-header">
-						<text class="order-id">订单号：{{order.id}}</text>
-						<text class="order-status" :class="'status-' + order.status">
-							{{getStatusText(order.status)}}
-						</text>
+						<uni-icons class="order-icon" type="email-filled" size="24" color="#4B6EFF"></uni-icons>
+						<text class="order-id">订单号：{{ order.id }}</text>
 					</view>
 					
 					<view class="order-content">
-						<!-- 预约时间 -->
-						<view class="info-row">
-							<uni-icons type="calendar" size="16" color="#666"></uni-icons>
+						<view class="info-item">
+							<uni-icons class="icon" type="calendar" size="16" color="#4B6EFF"></uni-icons>
 							<text class="label">预约时间：</text>
-							<text class="value">{{formatDate(order.appointmentTime)}}</text>
+							<text class="value">{{ formatDate(order.appointmentTime) }}</text>
 						</view>
 						
-						<!-- 联系人信息 -->
-						<view class="info-row">
-							<uni-icons type="person" size="16" color="#666"></uni-icons>
+						<view class="info-item">
+							<uni-icons class="icon" type="person" size="16" color="#4B6EFF"></uni-icons>
 							<text class="label">联系人：</text>
-							<text class="value">{{order.contactName}}</text>
-							<text class="phone">{{formatPhone(order.contactPhone)}}</text>
+							<text class="value">{{ order.contactName }} {{ formatPhone(order.contactPhone) }}</text>
 						</view>
 						
-						<!-- 地址信息 -->
-						<view class="info-row address">
-							<uni-icons type="location" size="16" color="#666"></uni-icons>
+						<view class="info-item address">
+							<uni-icons class="icon" type="location" size="16" color="#4B6EFF"></uni-icons>
 							<text class="label">地址：</text>
-							<text class="value">{{order.address}}</text>
+							<text class="value">{{ order.address }}</text>
 						</view>
 						
-						<!-- 备注信息 -->
-						<view class="info-row" v-if="order.notes">
-							<uni-icons type="info" size="16" color="#666"></uni-icons>
+						<view class="info-item" v-if="order.notes">
+							<uni-icons class="icon" type="info" size="16" color="#4B6EFF"></uni-icons>
 							<text class="label">备注：</text>
-							<text class="value">{{order.notes}}</text>
+							<text class="value">{{ order.notes }}</text>
 						</view>
 					</view>
 					
 					<view class="order-footer">
-						<view class="location-info" v-if="order.latitude && order.longitude">
-							<text class="distance">{{calculateDistance(order.latitude, order.longitude)}}</text>
+						<view class="distance">
+							<uni-icons class="icon" type="navigate" size="16" color="#4B6EFF"></uni-icons>
+							<text class="value">距离：<text>{{ calculateDistance(order.latitude, order.longitude) }}</text></text>
 						</view>
+						
 						<button class="accept-btn" 
 							v-if="order.status === 1"
 							@tap.stop="handleAcceptOrder(order.id)"
@@ -200,17 +197,6 @@ export default {
 			return phone ? phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : ''
 		},
 		
-		// 获取状态文本
-		getStatusText(status) {
-			const statusMap = {
-				1: '待接单',
-				2: '已接单',
-				3: '已完成',
-				4: '已取消'
-			}
-			return statusMap[status] || '未知状态'
-		},
-		
 		// 接单
 		async handleAcceptOrder(orderId) {
 			if (this.acceptingId === orderId) return
@@ -262,140 +248,170 @@ export default {
 <style lang="scss">
 .container {
 	min-height: 100vh;
-	background: #f5f5f5;
+	background-color: #f5f7fa;
+	display: flex;
+	flex-direction: column;
 }
 
+.status-bar {
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
+}
+
+/* 顶部导航栏 */
 .nav-bar {
-	position: sticky;
-	top: 0;
-	z-index: 100;
-	background: #fff;
 	height: 44px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0 15px;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	padding: 0;
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
+	width: 100%;
+	box-sizing: border-box;
 	
 	.title {
-		font-size: 16px;
+		font-size: 18px;
 		font-weight: 600;
-		color: #333;
+		color: #fff;
+		letter-spacing: 1px;
 	}
 }
 
+/* 订单列表区域 */
 .order-list {
-	padding: 15px;
+	flex: 1;
+	padding: 24rpx 20rpx;
+	box-sizing: border-box;
+	width: 100%;
 }
 
 .order-item {
 	background: #fff;
-	border-radius: 12px;
-	padding: 15px;
-	margin-bottom: 15px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	border-radius: 20rpx;
+	padding: 30rpx;
+	margin-bottom: 24rpx;
+	box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.04);
+	position: relative;
+	width: 100%;
+	box-sizing: border-box;
+	
+	.status-tag {
+		position: absolute;
+		top: 30rpx;
+		right: 30rpx;
+		font-size: 24rpx;
+		padding: 6rpx 20rpx;
+		border-radius: 30rpx;
+		background-color: #ffeed6;
+		color: #ff9800;
+		font-weight: 500;
+	}
 	
 	.order-header {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 12px;
+		padding-bottom: 20rpx;
+		border-bottom: 1px dashed #eee;
+		margin-bottom: 20rpx;
+		padding-right: 100rpx; /* 为右侧状态腾出空间 */
 		
-		.order-id {
-			font-size: 14px;
-			color: #666;
+		.order-icon {
+			margin-right: 16rpx;
+			color: #4B6EFF;
 		}
 		
-		.order-status {
-			font-size: 14px;
-			font-weight: 500;
-			
-			&.status-1 {
-				color: #2979ff;
-			}
-			
-			&.status-2 {
-				color: #ff9800;
-			}
-			
-			&.status-3 {
-				color: #4caf50;
-			}
-			
-			&.status-4 {
-				color: #999;
-			}
+		.order-id {
+			font-size: 32rpx;
+			font-weight: 600;
+			color: #333;
 		}
 	}
 	
 	.order-content {
-		.info-row {
+		.info-item {
 			display: flex;
-			align-items: center;
-			margin-bottom: 10px;
+			margin-bottom: 16rpx;
+			align-items: flex-start;
+			
+			.icon {
+				margin-right: 16rpx;
+				flex-shrink: 0;
+				color: #4B6EFF;
+				opacity: 0.85;
+			}
 			
 			.label {
-				font-size: 14px;
+				width: 150rpx;
+				flex-shrink: 0;
+				font-size: 28rpx;
 				color: #666;
-				margin: 0 5px;
 			}
 			
 			.value {
-				font-size: 14px;
+				flex: 1;
+				font-size: 28rpx;
 				color: #333;
-			}
-			
-			.phone {
-				margin-left: 10px;
-				font-size: 14px;
-				color: #666;
+				word-break: break-all; /* 确保长文本可以换行 */
+				padding-right: 20rpx; /* 确保右侧有足够空间 */
+				line-height: 1.5;
 			}
 			
 			&.address {
-				align-items: flex-start;
-				
 				.value {
-					flex: 1;
-					line-height: 1.4;
+					line-height: 1.6;
 				}
 			}
 		}
 	}
 	
 	.order-footer {
-		margin-top: 15px;
-		padding-top: 15px;
-		border-top: 1px solid #f0f0f0;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		margin-top: 24rpx;
+		padding-top: 20rpx;
+		border-top: 1px dashed #eee;
 		
-		.location-info {
-			.distance {
-				font-size: 14px;
+		.distance {
+			display: flex;
+			align-items: center;
+			
+			.icon {
+				margin-right: 8rpx;
+				color: #4B6EFF;
+			}
+			
+			.value {
+				font-size: 26rpx;
 				color: #666;
 				
-				&::before {
-					content: '距离：';
+				text {
+					color: #4B6EFF;
+					font-weight: 500;
 				}
 			}
 		}
 		
 		.accept-btn {
-			margin: 0;
-			padding: 0 20px;
-			height: 32px;
-			line-height: 32px;
-			font-size: 14px;
+			padding: 14rpx 36rpx;
+			background: linear-gradient(135deg, #4B6EFF, #55ACEE);
 			color: #fff;
-			background: #2979ff;
-			border-radius: 16px;
+			border-radius: 40rpx;
+			font-size: 28rpx;
+			font-weight: 500;
+			box-shadow: 0 4rpx 12rpx rgba(75, 110, 255, 0.2);
+			transition: all 0.3s;
 			
 			&:active {
-				opacity: 0.8;
+				transform: scale(0.96);
+				opacity: 0.9;
 			}
 		}
 	}
+}
+
+/* 添加底部安全区域 */
+.safe-area-bottom {
+	height: calc(env(safe-area-inset-bottom) + 30rpx);
 }
 
 .empty-state {

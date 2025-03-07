@@ -323,7 +323,9 @@ export default {
 						icon: 'success'
 					})
 					setTimeout(() => {
-						uni.navigateBack()
+						uni.redirectTo({
+							url: '/pages/my-orders/index'
+						})
 					}, 1500)
 				} else {
 					throw new Error(response.data.msg || '预约失败')
@@ -344,30 +346,44 @@ export default {
 </script>
 
 <style lang="scss">
-/* 整体容器样式优化 */
+/* 容器样式优化，确保内容不会溢出 */
 .container {
 	min-height: 100vh;
-	background-color: #f5f7fa;
+	background-color: #f8f9fc;
 	display: flex;
 	flex-direction: column;
+	box-sizing: border-box;
+	width: 100%;
 }
 
-/* 导航栏样式优化 */
+.status-bar {
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
+}
+
+/* 导航栏样式调整，确保标题居中且不会溢出 */
 .nav-bar {
 	height: 44px;
 	display: flex;
 	align-items: center;
 	padding: 0 16px;
-	background: #fff;
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
 	position: relative;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	width: 100%;
+	box-sizing: border-box;
 	
 	.left {
-		padding: 8px;
-		margin-left: -8px;
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(255, 255, 255, 0.2);
+		border-radius: 50%;
+		backdrop-filter: blur(5px);
+		z-index: 1;
 		
 		&:active {
-			opacity: 0.7;
+			background: rgba(255, 255, 255, 0.3);
 		}
 	}
 	
@@ -375,20 +391,30 @@ export default {
 		position: absolute;
 		left: 50%;
 		transform: translateX(-50%);
-		font-size: 17px;
+		font-size: 18px;
 		font-weight: 600;
-		color: #333;
-		letter-spacing: 0.5px;
+		color: #fff;
+		max-width: 60%;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 }
 
-/* 提示卡片样式优化 */
+/* 表单容器样式优化，确保内容可见 */
+.form-container {
+	flex: 1;
+	padding: 20rpx 30rpx;
+	box-sizing: border-box;
+	width: 100%;
+}
+
 .tips-card {
-	background: linear-gradient(135deg, rgba(41, 121, 255, 0.1), rgba(41, 121, 255, 0.05));
+	background: rgba(75, 110, 255, 0.05);
+	border: 1px solid rgba(75, 110, 255, 0.1);
 	border-radius: 16rpx;
 	padding: 24rpx;
 	margin-bottom: 30rpx;
-	border: 1px solid rgba(41, 121, 255, 0.1);
 	
 	.tips-header {
 		display: flex;
@@ -397,96 +423,85 @@ export default {
 		
 		.tips-title {
 			font-size: 28rpx;
-			color: #2979ff;
-			font-weight: 600;
-			margin-left: 8rpx;
+			color: #4B6EFF;
+			font-weight: 500;
+			margin-left: 10rpx;
 		}
 	}
 	
 	.tips-content {
 		font-size: 26rpx;
 		color: #666;
-		line-height: 1.6;
+		line-height: 1.5;
 	}
 }
 
-/* 表单区域样式优化 */
+/* 输入区域样式，确保右侧边距足够 */
 .form-group {
-	background-color: #fff;
+	background: #fff;
 	border-radius: 16rpx;
-	padding: 0 24rpx;
+	padding: 30rpx;
 	margin-bottom: 30rpx;
-	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
-}
-
-.form-item {
-	padding: 24rpx 0;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-	position: relative;
+	box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.03);
 	
-	&:last-child {
-		border-bottom: none;
-	}
-	
-	.label {
-		font-size: 28rpx;
-		color: #333;
-		margin-bottom: 16rpx;
-		display: block;
-		font-weight: 600;
-	}
-	
-	input {
-		font-size: 28rpx;
-		color: #333;
+	.form-item {
+		margin-bottom: 30rpx;
 		width: 100%;
-		height: 80rpx;
-		background: #f8f9fa;
-		border-radius: 12rpx;
-		padding: 0 24rpx;
-		transition: all 0.3s;
+		box-sizing: border-box;
 		
-		&:focus {
-			background: #fff;
-			box-shadow: 0 0 0 2px rgba(41, 121, 255, 0.1);
+		&:last-child {
+			margin-bottom: 0;
+		}
+		
+		.label {
+			font-size: 28rpx;
+			color: #666;
+			margin-bottom: 16rpx;
+			display: block;
+			font-weight: 500;
+		}
+		
+		input, textarea {
+			width: 100%;
+			box-sizing: border-box;
+			background: #f5f7fa;
+			border-radius: 12rpx;
+			height: 88rpx;
+			padding: 20rpx 24rpx;
+			font-size: 28rpx;
+			color: #333;
+			border: 2rpx solid transparent;
+			transition: all 0.3s;
+			
+			&:focus {
+				background: #fff;
+				border-color: #4B6EFF;
+				box-shadow: 0 0 0 4rpx rgba(75, 110, 255, 0.1);
+			}
+		}
+		
+		textarea {
+			height: 200rpx;
+			padding: 20rpx 24rpx;
+			line-height: 1.5;
+		}
+		
+		.word-count {
+			font-size: 24rpx;
+			color: #999;
+			text-align: right;
+			display: block;
+			margin-top: 8rpx;
 		}
 	}
 	
-	textarea {
-		width: 100%;
-		height: 180rpx;
-		font-size: 28rpx;
-		color: #333;
-		background: #f8f9fa;
-		border-radius: 12rpx;
-		padding: 20rpx 24rpx;
-		transition: all 0.3s;
-		
-		&:focus {
-			background: #fff;
-			box-shadow: 0 0 0 2px rgba(41, 121, 255, 0.1);
-		}
-	}
-	
-	.word-count {
-		position: absolute;
-		right: 12rpx;
-		bottom: 36rpx;
-		font-size: 24rpx;
-		color: #999;
-		background: rgba(255, 255, 255, 0.9);
-		padding: 4rpx 8rpx;
-		border-radius: 6rpx;
-	}
-	
-	&.location {
+	.location {
 		.address-content {
 			display: flex;
-			justify-content: space-between;
 			align-items: center;
-			background: #f8f9fa;
+			background: #f5f7fa;
 			border-radius: 12rpx;
-			padding: 20rpx 24rpx;
+			padding: 24rpx;
 			transition: all 0.3s;
 			
 			&:active {
@@ -501,7 +516,7 @@ export default {
 				.address-text {
 					font-size: 28rpx;
 					color: #333;
-					margin-left: 8rpx;
+					margin-left: 10rpx;
 					
 					&.placeholder {
 						color: #999;
@@ -514,11 +529,16 @@ export default {
 				align-items: center;
 				
 				.get-location {
-					padding: 8rpx;
-					border-radius: 8rpx;
+					width: 60rpx;
+					height: 60rpx;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					background: rgba(75, 110, 255, 0.08);
+					border-radius: 50%;
 					
 					&:active {
-						background: rgba(41, 121, 255, 0.1);
+						background: rgba(75, 110, 255, 0.15);
 					}
 				}
 				
@@ -536,13 +556,28 @@ export default {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		background: #f8f9fa;
+		background: #f5f7fa;
 		border-radius: 12rpx;
-		padding: 20rpx 24rpx;
+		padding: 24rpx;
 		transition: all 0.3s;
 		
 		&:active {
 			background: #f0f2f5;
+		}
+		
+		.picker-wrapper {
+			display: flex;
+			align-items: center;
+			
+			.picker-text {
+				margin-left: 10rpx;
+				font-size: 28rpx;
+				color: #333;
+				
+				&.placeholder {
+					color: #999;
+				}
+			}
 		}
 	}
 }
@@ -553,7 +588,7 @@ export default {
 	border-radius: 16rpx;
 	padding: 30rpx;
 	margin-bottom: 120rpx;
-	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+	box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.03);
 	
 	.service-header {
 		display: flex;
@@ -564,64 +599,74 @@ export default {
 			font-size: 28rpx;
 			color: #333;
 			font-weight: 600;
-			margin-left: 8rpx;
+			margin-left: 10rpx;
 		}
 	}
 	
 	.service-items {
 		.service-item {
+			position: relative;
 			font-size: 26rpx;
 			color: #666;
-			line-height: 2;
+			line-height: 1.8;
 			display: block;
-			padding-left: 24rpx;
-			position: relative;
+			padding-left: 30rpx;
+			margin-bottom: 10rpx;
+			
+			&:last-child {
+				margin-bottom: 0;
+			}
 			
 			&::before {
 				content: '';
 				position: absolute;
-				left: 8rpx;
+				left: 10rpx;
 				top: 18rpx;
-				width: 6rpx;
-				height: 6rpx;
-				background: #2979ff;
+				width: 8rpx;
+				height: 8rpx;
+				background: #4B6EFF;
 				border-radius: 50%;
+				box-shadow: 0 0 0 4rpx rgba(75, 110, 255, 0.1);
 			}
 		}
 	}
 }
 
-/* 底部按钮样式优化 */
+/* 底部按钮区域调整 */
 .bottom-bar {
 	position: fixed;
 	left: 0;
 	right: 0;
 	bottom: 0;
 	background: rgba(255, 255, 255, 0.98);
-	padding: 20rpx 30rpx;
-	padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+	padding: 24rpx 30rpx;
+	padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
 	box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.05);
 	backdrop-filter: blur(10px);
+	z-index: 10;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .submit-btn {
-	background: linear-gradient(135deg, #4a73f3, #2979ff);
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
 	color: #fff;
-	border-radius: 12rpx;
+	border-radius: 45rpx;
 	font-size: 32rpx;
 	font-weight: 600;
-	height: 88rpx;
-	line-height: 88rpx;
-	letter-spacing: 1px;
+	height: 90rpx;
+	line-height: 90rpx;
+	letter-spacing: 2rpx;
+	box-shadow: 0 8rpx 20rpx rgba(75, 110, 255, 0.2);
 	transition: all 0.3s;
 	
 	&:active {
 		transform: scale(0.98);
-		opacity: 0.9;
+		box-shadow: 0 4rpx 10rpx rgba(75, 110, 255, 0.2);
 	}
 }
 
 .input-placeholder {
-	color: #999;
+	color: #bbb;
 }
 </style> 

@@ -118,85 +118,136 @@ export default {
 <style lang="scss">
 .container {
 	min-height: 100vh;
-	background: #f5f5f5;
+	background: #f8f9fc;
 }
 
 .user-header {
 	position: relative;
-	padding: 60rpx 40rpx;
-	background: linear-gradient(135deg, #4776E6, #8E54E9);
+	padding: 80rpx 40rpx 100rpx;
+	background: linear-gradient(135deg, #4B6EFF, #55ACEE);
+	border-radius: 0 0 40rpx 40rpx;
+	overflow: hidden;
+	
+	// 添加背景气泡装饰
+	&::before, &::after {
+		content: '';
+		position: absolute;
+		background: rgba(255, 255, 255, 0.1);
+		border-radius: 50%;
+	}
+	
+	&::before {
+		width: 300rpx;
+		height: 300rpx;
+		bottom: -150rpx;
+		left: -100rpx;
+	}
+	
+	&::after {
+		width: 200rpx;
+		height: 200rpx;
+		top: -100rpx;
+		right: -50rpx;
+	}
 	
 	.user-info {
+		position: relative;
+		z-index: 1;
 		display: flex;
 		align-items: center;
+	}
+	
+	.avatar {
+		width: 140rpx;
+		height: 140rpx;
+		border-radius: 50%;
+		border: 6rpx solid rgba(255, 255, 255, 0.3);
+		background-color: #fff;
+		box-shadow: 0 10rpx 20rpx rgba(0, 0, 0, 0.1);
+	}
+	
+	.info {
+		margin-left: 24rpx;
+		flex: 1;
 		
-		.avatar {
-			width: 120rpx;
-			height: 120rpx;
-			border-radius: 50%;
-			border: 4rpx solid rgba(255, 255, 255, 0.2);
+		.nickname {
+			font-size: 36rpx;
+			color: #fff;
+			font-weight: 600;
+			margin-bottom: 8rpx;
+			text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+			display: block;
 		}
 		
-		.info {
-			margin-left: 30rpx;
-			
-			.nickname {
-				display: block;
-				font-size: 36rpx;
-				color: #fff;
-				margin-bottom: 10rpx;
-			}
-			
-			.email {
-				font-size: 24rpx;
-				color: rgba(255, 255, 255, 0.8);
-			}
+		.email {
+			font-size: 24rpx;
+			color: rgba(255, 255, 255, 0.85);
+			display: block;
 		}
 	}
 	
 	.setting-btn {
-		position: absolute;
-		top: 60rpx;
-		right: 40rpx;
 		width: 80rpx;
 		height: 80rpx;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.15);
 		border-radius: 50%;
 		backdrop-filter: blur(10px);
+		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+		transition: all 0.3s;
+		
+		&:active {
+			transform: scale(0.95);
+			background: rgba(255, 255, 255, 0.25);
+		}
 	}
 }
 
 .menu-list {
-	margin-top: 20rpx;
+	margin: -60rpx 30rpx 40rpx;
 	background: #fff;
-	padding: 0 30rpx;
+	padding: 20rpx;
+	border-radius: 24rpx;
+	box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.05);
+	position: relative;
+	z-index: 2;
 	
 	.menu-item {
 		display: flex;
 		align-items: center;
-		height: 100rpx;
+		height: 110rpx;
 		border-bottom: 1rpx solid #f5f5f5;
+		padding: 0 20rpx;
+		transition: all 0.3s;
+		border-radius: 16rpx;
 		
 		&:last-child {
 			border-bottom: none;
 		}
 		
+		&:active {
+			background-color: #f0f4ff;
+			transform: translateX(10rpx);
+		}
+		
 		.icon {
-			width: 48rpx;
-			height: 48rpx;
+			width: 60rpx;
+			height: 60rpx;
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			background: #f5f7fa;
+			border-radius: 16rpx;
+			margin-right: 24rpx;
 		}
 		
 		.title {
 			flex: 1;
-			font-size: 28rpx;
+			font-size: 30rpx;
 			color: #333;
-			margin-left: 20rpx;
+			font-weight: 500;
 		}
 	}
 }
@@ -209,5 +260,30 @@ export default {
 	color: #ff5151;
 	font-size: 30rpx;
 	border-radius: 45rpx;
+	font-weight: 600;
+	box-shadow: 0 6rpx 16rpx rgba(255, 81, 81, 0.1);
+	position: relative;
+	overflow: hidden;
+	
+	&::after {
+		border: none;
+	}
+	
+	&:active {
+		transform: scale(0.98);
+		background: #fff5f5;
+	}
+}
+
+// 添加波纹动画效果
+@keyframes ripple {
+	0% {
+		transform: scale(0);
+		opacity: 0.5;
+	}
+	100% {
+		transform: scale(2);
+		opacity: 0;
+	}
 }
 </style> 
